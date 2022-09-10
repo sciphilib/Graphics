@@ -1,5 +1,6 @@
 ﻿using OpenTK.Compute.OpenCL;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,5 +100,37 @@ namespace Graphics
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public void SetBool(string name, bool value)
+        {
+            GL.Uniform1(GL.GetUniformLocation(Handle, name), Convert.ToInt32(value));
+        }
+
+        public void SetInt(string name, int value)
+        {
+            GL.Uniform1(GL.GetUniformLocation(Handle, name), value);
+        }
+
+        public void SetFloat(string name, float value)
+        {
+            GL.Uniform1(GL.GetUniformLocation(Handle, name), value);
+        }
+        public void SetVec2(string name, Vector2 value)
+        {
+            GL.Uniform2(GL.GetUniformLocation(Handle, name), value);
+        }
+        public void SetVec3(string name, Vector3 value)
+        {
+            GL.Uniform3(GL.GetUniformLocation(Handle, name), value);
+        }
+        public void SetVec4(string name, Vector4 value)
+        {
+            GL.Uniform4(GL.GetUniformLocation(Handle, name), value);
+        }
+        public void SetMat4(string name, Matrix4 value)
+        {
+            GL.UniformMatrix4(GL.GetUniformLocation(Handle, name), false, ref value);
+        }
+
     }
 }

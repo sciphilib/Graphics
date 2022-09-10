@@ -28,3 +28,5 @@ D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\refint\Graphics.dll
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\Graphics.pdb
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\Graphics.genruntimeconfig.cache
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\ref\Graphics.dll
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\FragmentShader.glsl
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\VertexShader.glsl
