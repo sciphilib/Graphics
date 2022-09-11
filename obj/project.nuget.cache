@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "SapvEcO+LsTBKgjyoJPda0WV5c82srMnvm6CAyj8AHdE74vm/IQSHF0hSWx9xnWsEIc31nSLtPtSpx9+Bn3GWg==",
+  "dgSpecHash": "UOG93QyAKUU9Mt1hIvglN8BVDXrgo+pbLoxyp5/jOGygwW5lRVzlPWsW9hpOg4zYkr2GCdZvTcW5tXwSqRbtzA==",
   "success": true,
   "projectFilePath": "D:\\Microsoft Visual Studio\\Repos\\Graphics\\Graphics.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\wispi\\.nuget\\packages\\imgui.net\\1.87.3\\imgui.net.1.87.3.nupkg.sha512",
+    "C:\\Users\\wispi\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\opentk\\4.7.5\\opentk.4.7.5.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\opentk.compute\\4.7.5\\opentk.compute.4.7.5.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\opentk.core\\4.7.5\\opentk.core.4.7.5.nupkg.sha512",
@@ -15,6 +17,9 @@
     "C:\\Users\\wispi\\.nuget\\packages\\opentk.windowing.common\\4.7.5\\opentk.windowing.common.4.7.5.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\opentk.windowing.desktop\\4.7.5\\opentk.windowing.desktop.4.7.5.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.7.5\\opentk.windowing.graphicslibraryframework.4.7.5.nupkg.sha512",
+    "C:\\Users\\wispi\\.nuget\\packages\\system.buffers\\4.4.0\\system.buffers.4.4.0.nupkg.sha512",
+    "C:\\Users\\wispi\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\wispi\\.nuget\\packages\\system.numerics.vectors\\4.4.0\\system.numerics.vectors.4.4.0.nupkg.sha512",
     "C:\\Users\\wispi\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],
   "logs": []
