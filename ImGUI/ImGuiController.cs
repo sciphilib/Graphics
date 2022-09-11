@@ -222,14 +222,16 @@ void main()
             io.MouseDown[2] = MouseState[MouseButton.Middle];
 
             var screenPoint = new Vector2i((int)MouseState.X, (int)MouseState.Y);
-            var point = wnd.PointToClient(screenPoint);
+            var point = screenPoint;
+            //var point = wnd.PointToClient(screenPoint); does not work correctly
             io.MousePos = new System.Numerics.Vector2(point.X, point.Y);
-
-            io.MouseWheel = MouseState.Scroll.Y - PrevMouseState.Scroll.Y;
-            io.MouseWheelH = MouseState.Scroll.X - PrevMouseState.Scroll.X;
 
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
+                if (key == Keys.Unknown)
+                {
+                    continue;
+                }
                 io.KeysDown[(int)key] = KeyboardState.IsKeyDown(key);
             }
 
@@ -255,6 +257,13 @@ void main()
             PressedChars.Add(keyChar);
         }
 
+        internal void MouseScroll(Vector2 offset)
+        {
+            ImGuiIOPtr io = ImGui.GetIO();
+
+            io.MouseWheel = offset.Y;
+            io.MouseWheelH = offset.X;
+        }
         private static void SetKeyMappings()
         {
             ImGuiIOPtr io = ImGui.GetIO();
