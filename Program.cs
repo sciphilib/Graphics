@@ -5,9 +5,9 @@
     {
         static void Main(string[] args)
         {
-            using (Game game = new())
+            using (Window window = new(1200, 900, "Graphics"))
             {
-                game.Run();
+                window.Run();
             }
         }
     }
