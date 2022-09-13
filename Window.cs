@@ -75,6 +75,7 @@ namespace Graphics
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             _renderer = new(this);
             _windowInput = new(this);
+            CursorState = CursorState.Grabbed;
         }
 
         protected override void OnUnload()
@@ -85,6 +86,11 @@ namespace Graphics
         public Renderer GetRenderer()
         {
             return _renderer;
+        }
+
+        public WindowInput GetWindowInput()
+        {
+            return _windowInput;
         }
 
     }
