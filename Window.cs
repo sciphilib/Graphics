@@ -16,8 +16,9 @@ namespace Graphics
     {
         public delegate void OnEventCallback();
 
-        private ImGuiController? _controller;
-        private Renderer? _renderer;
+        private ImGuiController _controller;
+        private Renderer _renderer;
+        private WindowInput _windowInput;
 
         private OnEventCallback? OnUpdate;
         private OnEventCallback? OnRender;
@@ -73,11 +74,17 @@ namespace Graphics
             base.OnLoad();
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             _renderer = new(this);
+            _windowInput = new(this);
         }
 
         protected override void OnUnload()
         {
             base.OnUnload();
+        }
+
+        public Renderer GetRenderer()
+        {
+            return _renderer;
         }
 
     }

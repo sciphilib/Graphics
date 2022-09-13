@@ -15,8 +15,8 @@ namespace Graphics
 
     public class Renderer
     {
-        private Camera? _camera;
-        private Shader? _shader;
+        private Camera _camera;
+        private Shader _shader;
         private GameWindow _window;
 
         // scene variables
@@ -34,7 +34,6 @@ namespace Graphics
             OnLoad();   
             window.BindRenderCallback(OnRender);
             window.BindDrawGUICallback(OnImGuiDraw);
-            window.BindUpdateCallback(OnUpdate);
         }
 
         ~Renderer()
@@ -151,19 +150,14 @@ namespace Graphics
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
-        private void OnUpdate()
-        {
-            if (_window.KeyboardState.IsKeyDown(Keys.Escape))
-                _window.Close();
-
-            if (_window.KeyboardState.IsKeyPressed(Keys.Q))
-                IsMeshMode = !IsMeshMode;
-        }
-
         private void OnUnload()
         {
             _shader?.Dispose();
         }
 
+        public void ChangeMeshMode()
+        {
+            IsMeshMode = !IsMeshMode;
+        }
     }
 }
