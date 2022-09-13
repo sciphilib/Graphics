@@ -16,6 +16,8 @@ namespace Graphics
         public Vector3 CameraWorldUp { get; set; } = Vector3.UnitY;
         public float Fov { get; set; } = 45.0f;
 
+        public float CameraSpeed { get; set; } = 0.05f;
+
         public float AspectRatio { get; set; }
 
         public Camera(Vector3 position, Vector3 target, float aspectRation)

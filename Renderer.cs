@@ -159,5 +159,10 @@ namespace Graphics
         {
             IsMeshMode = !IsMeshMode;
         }
+
+        public Camera GetCamera()
+        {
+            return _camera;
+        }
     }
 }
