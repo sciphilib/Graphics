@@ -17,11 +17,13 @@ namespace Graphics
     {
         private Camera _camera;
         private Shader _shader;
+        private Shader _sunShader;
         private GameWindow _window;
 
         // scene variables
         private int VBO;
         private int VAO;
+        private int sunVAO;
         private bool IsMeshMode = false;
 
         // imgui variables
@@ -43,7 +45,8 @@ namespace Graphics
         private void OnLoad()
         {
             _camera = new(new Vector3(1.0f, 1.0f, 3.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
-            _shader = new("Shaders\\VertexShader.glsl", "Shaders\\FragmentShader.glsl");
+            _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
+            _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
 
             IsMeshMode = false;
             GL.Enable(EnableCap.DepthTest);
@@ -94,6 +97,7 @@ namespace Graphics
                 -0.5f,  0.5f, -0.5f,
             };
 
+            // object
             VBO = GL.GenBuffer();
             VAO = GL.GenVertexArray();
             GL.BindVertexArray(VAO);
@@ -101,6 +105,15 @@ namespace Graphics
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
+
+            // sun
+            sunVAO = GL.GenVertexArray();
+            GL.BindVertexArray(sunVAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.EnableVertexAttribArray(0);
+
+
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
@@ -133,12 +146,23 @@ namespace Graphics
                 viewMatrix = Matrix4.Identity;
                 projectionMatrix = Matrix4.Identity;
             }
+
+            // object's shader settings
             _shader?.SetMat4("model", modelMatrix);
             _shader?.SetMat4("view", viewMatrix);
             _shader?.SetMat4("projection", projectionMatrix);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);    
             GL.BindVertexArray(VAO);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            // sun's shader settings
+            _sunShader?.Use();
+            Matrix4 SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, 6.0f));
+            _sunShader?.SetMat4("model", SunModelMatrix);
+            _sunShader?.SetMat4("view", viewMatrix);
+            _sunShader?.SetMat4("projection", projectionMatrix);
+            GL.BindVertexArray(sunVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
         }
 

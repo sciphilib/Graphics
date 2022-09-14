@@ -28,8 +28,6 @@ D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\refint\Graphics.dll
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\Graphics.pdb
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\Graphics.genruntimeconfig.cache
 D:\Microsoft Visual Studio\Repos\Graphics\obj\Debug\net6.0\ref\Graphics.dll
-D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\FragmentShader.glsl
-D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\VertexShader.glsl
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\ImGui.NET.dll
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\System.Drawing.Common.dll
@@ -40,3 +38,7 @@ D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\runtimes\win-x86\nati
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\FragmentLightingShader.glsl
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\VertexLightingShader.glsl
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\FragmentSunShader.glsl
+D:\Microsoft Visual Studio\Repos\Graphics\bin\Debug\net6.0\Shaders\VertexSunShader.glsl
