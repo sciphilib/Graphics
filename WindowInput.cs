@@ -41,6 +41,9 @@ namespace Graphics
             if (_window.KeyboardState.IsKeyPressed(Keys.Q))
                 _window.GetRenderer().ChangeMeshMode();
 
+            if (_window.KeyboardState.IsKeyReleased(Keys.Space))
+                _window.ChangeIsGUI();
+
             //WASD camera
             float currentFrame = (float)_window.UpdateTime;
             _deltaTime = currentFrame / _lastFrame;
@@ -61,6 +64,7 @@ namespace Graphics
             {
                 _camera.CameraPosition += _camera.CameraSpeed * _deltaTime * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp));
             }
+            
 
             //mouse input
             _prevMouseState = _mouseState;
@@ -78,7 +82,8 @@ namespace Graphics
                 _deltaMouse = new(deltaX, deltaY);
                 _mousePos = new(_mouseState.X, _mouseState.Y);
             }
-            _camera.GetCameraController().CameraMouseLook(_deltaMouse, true);
+            if (!_window.GetIsGUI())
+                _camera.GetCameraController().CameraMouseLook(_deltaMouse, true);
         }
 
         public System.Numerics.Vector2 GetMousePos()

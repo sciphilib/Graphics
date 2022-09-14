@@ -24,11 +24,13 @@ namespace Graphics
         private OnEventCallback? OnRender;
         private OnEventCallback? OnDrawGUI;
 
+        private bool _isGUI;
         public Window(int width, int height, string title) :
             base(GameWindowSettings.Default, new NativeWindowSettings() { Size = new Vector2i(width, height),
                 Title = title, APIVersion = new Version(3, 3) })
         {
             CenterWindow(new Vector2i(Size.X, Size.Y));
+            _isGUI = false;
         }
 
         public void BindUpdateCallback(OnEventCallback call)
@@ -54,13 +56,21 @@ namespace Graphics
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
-            _controller?.Update(this, (float)args.Time);
-
+            // render scene objects
             OnRender?.Invoke();
-            OnDrawGUI?.Invoke();
+            _controller?.Update(this, (float)args.Time);
+            
+            // render gui
+            if (_isGUI)
+            {
+                CursorState = CursorState.Normal;
+                OnDrawGUI?.Invoke();
+            }
+            else
+                CursorState = CursorState.Grabbed;
             _controller?.Render();
+            
             Context.SwapBuffers();
-
         }
 
         protected override void OnResize(ResizeEventArgs args)
@@ -75,7 +85,6 @@ namespace Graphics
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             _renderer = new(this);
             _windowInput = new(this);
-            CursorState = CursorState.Grabbed;
         }
 
         protected override void OnUnload()
@@ -93,5 +102,14 @@ namespace Graphics
             return _windowInput;
         }
 
+        public void ChangeIsGUI()
+        {
+            _isGUI = !_isGUI;
+        }
+
+        public bool GetIsGUI()
+        {
+            return _isGUI;
+        }
     }
 }
