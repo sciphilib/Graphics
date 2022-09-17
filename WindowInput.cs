@@ -11,64 +11,57 @@ namespace Graphics
 {
     public class WindowInput
     {
-        private Window _window;
-        private Camera _camera;
-
+        private static Window _window;
+        
         //time variables
-        private float _lastFrame = 0.0f;
-        private float _deltaTime = 0.0f;
+        private static float _lastFrame = 0.0f;
+        private static float _deltaTime = 0.0f;
 
         //mouse state variables
         private static MouseState _mouseState;
-        private static MouseState _prevMouseState;
+        private static MouseState _lastMouseState;
+        private static KeyboardState _keyboardState;
+        private static KeyboardState _lastKeyboardState;
         private static bool _firstMove = true;
-        private static System.Numerics.Vector2 _mousePos;
-        private static System.Numerics.Vector2 _deltaMouse;
+        private static Vector2 _mousePos;
+        private static Vector2 _deltaMouse;
 
+        //// singleton
+        //private static readonly Lazy<WindowInput> _lazyWindowInput =
+        //    new(() => new WindowInput(_window));
+        //public static WindowInput GetInstance { get { return _lazyWindowInput.Value; } }
 
         public WindowInput(Window window)
         {
             _window = window;
             _window.BindUpdateCallback(ProcessInput);
-            _camera = _window.GetRenderer().GetCamera();
+            //_camera = _window.GetRenderer().GetCamera();
         }
 
-        private void ProcessInput()
+
+        private static void ProcessInput()
         {
-            if (_window.KeyboardState.IsKeyDown(Keys.Escape))
-                _window.Close();
+            _lastKeyboardState = _keyboardState;
+            _lastMouseState = _mouseState;
+            //if (_window.KeyboardState.IsKeyDown(Keys.Escape))
+            //    _window.Close();
 
-            if (_window.KeyboardState.IsKeyPressed(Keys.Q))
-                _window.GetRenderer().ChangeMeshMode();
+            //if (_window.KeyboardState.IsKeyPressed(Keys.Q))
+            //    _window.GetRenderer().ChangeMeshMode();
 
-            if (_window.KeyboardState.IsKeyReleased(Keys.Space))
-                _window.ChangeIsGUI();
+            //if (_window.KeyboardState.IsKeyReleased(Keys.Space))
+            //    _window.ChangeIsGUI();
 
-            //WASD camera
+            // WASD camera
             float currentFrame = (float)_window.UpdateTime;
             _deltaTime = currentFrame / _lastFrame;
             _lastFrame = currentFrame;
-            if (_window.KeyboardState.IsKeyDown(Keys.W))
-            {
-                _camera.CameraPosition += _camera.CameraSpeed * _deltaTime * _camera.CameraFront;
-            }
-            if (_window.KeyboardState.IsKeyDown(Keys.S))
-            {
-                _camera.CameraPosition += -(_camera.CameraSpeed * _deltaTime * _camera.CameraFront);
-            }
-            if (_window.KeyboardState.IsKeyDown(Keys.A))
-            {
-                _camera.CameraPosition += -(_camera.CameraSpeed * _deltaTime * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp)));
-            }
-            if (_window.KeyboardState.IsKeyDown(Keys.D))
-            {
-                _camera.CameraPosition += _camera.CameraSpeed * _deltaTime * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp));
-            }
+
             
 
-            //mouse input
-            _prevMouseState = _mouseState;
+            // mouse input
             _mouseState = _window.MouseState;
+            _keyboardState = _window.KeyboardState;
             if (_firstMove)
             {
                 _mousePos = new(_mouseState.X, _mouseState.Y);
@@ -82,18 +75,35 @@ namespace Graphics
                 _deltaMouse = new(deltaX, deltaY);
                 _mousePos = new(_mouseState.X, _mouseState.Y);
             }
-            if (!_window.GetIsGUI())
-                _camera.GetCameraController().CameraMouseLook(_deltaMouse, true);
+
         }
 
-        public System.Numerics.Vector2 GetMousePos()
+
+
+        public static Vector2 GetMousePos()
         {
             return _mousePos;
         }
 
-        public System.Numerics.Vector2 GetDeltaMouse()
+        public static Vector2 GetDeltaMouse()
         {
             return _deltaMouse;
         }
+
+        public static bool IsKeyDown(Keys key)
+        {
+            return _keyboardState.IsKeyDown(key);
+        }
+
+        public static bool IsKeyPressed(Keys key)
+        {
+            return _keyboardState.IsKeyPressed(key);
+        }
+
+        public static float GetDeltaTime()
+        {
+            return _deltaTime;
+        }
+
     }
 }

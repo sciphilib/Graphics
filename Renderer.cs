@@ -15,12 +15,12 @@ namespace Graphics
 
     public class Renderer
     {
-        private Camera _camera;
-        private Shader _shader;
-        private Shader _sunShader;
         private GameWindow _window;
+        private Camera _camera;
 
         // scene variables
+        private Shader _shader;
+        private Shader _sunShader;
         private int VBO;
         private int VAO;
         private int sunVAO;

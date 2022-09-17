@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+
 
 namespace Graphics
 {
     public class CameraController
     {
-        Camera _camera;
+        private Camera _camera;
         public CameraController(Camera camera)
         {
             _camera = camera;
         }
 
-        public void CameraMouseLook(Vector2 offset, bool constrainPitch)
+        public void CameraUpdate(Vector2 offset, bool constrainPitch = true)
         {
             offset.X *= _camera.MouseSensitivity;
             offset.Y *= _camera.MouseSensitivity;
@@ -32,6 +34,27 @@ namespace Graphics
             }
 
             _camera.UpdateCameraVectors();
+        }
+
+        public void CameraKeyboardProcess()
+        {
+            if (WindowInput.IsKeyDown(Keys.W))
+            {
+                _camera.CameraPosition += _camera.CameraSpeed * WindowInput.GetDeltaTime() * _camera.CameraFront;
+            }
+            if (WindowInput.IsKeyDown(Keys.S))
+            {
+                _camera.CameraPosition += -(_camera.CameraSpeed * WindowInput.GetDeltaTime() * _camera.CameraFront);
+            }
+            if (WindowInput.IsKeyDown(Keys.A))
+            {
+                _camera.CameraPosition += -(_camera.CameraSpeed * WindowInput.GetDeltaTime() * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp)));
+            }
+            if (WindowInput.IsKeyDown(Keys.D))
+            {
+                _camera.CameraPosition += _camera.CameraSpeed * WindowInput.GetDeltaTime() * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp));
+            }
+
         }
     }
 }

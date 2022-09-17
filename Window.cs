@@ -51,11 +51,15 @@ namespace Graphics
         {
             base.OnUpdateFrame(args);
             OnUpdate?.Invoke();
+
+            if (_isGUI)
+                _renderer.GetCamera().GetCameraController().CameraUpdate(WindowInput.GetDeltaMouse(), true);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
+
             // render scene objects
             OnRender?.Invoke();
             _controller?.Update(this, (float)args.Time);
