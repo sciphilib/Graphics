@@ -1,9 +1,9 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +13,11 @@ namespace Graphics
     {
         private static Window _window;
         
-        //time variables
+        // time variables
         private static float _lastFrame = 0.0f;
         private static float _deltaTime = 0.0f;
 
-        //mouse state variables
+        // mouse state variables
         private static MouseState _mouseState;
         private static MouseState _lastMouseState;
         private static KeyboardState _keyboardState;
@@ -26,38 +26,37 @@ namespace Graphics
         private static Vector2 _mousePos;
         private static Vector2 _deltaMouse;
 
-        //// singleton
-        //private static readonly Lazy<WindowInput> _lazyWindowInput =
-        //    new(() => new WindowInput(_window));
-        //public static WindowInput GetInstance { get { return _lazyWindowInput.Value; } }
+        // singleton
+        private static WindowInput _instance;
+        private static object syncRoot = new Object();
 
-        public WindowInput(Window window)
+
+        private WindowInput(Window window)
         {
             _window = window;
             _window.BindUpdateCallback(ProcessInput);
-            //_camera = _window.GetRenderer().GetCamera();
         }
 
-
+        public static WindowInput getInstance(Window window)
+        {
+            if (_instance == null)
+            {
+                lock (syncRoot)
+                {
+                    if (_instance == null)
+                        _instance = new WindowInput(window);
+                }
+            }
+            return _instance;
+        }
         private static void ProcessInput()
         {
             _lastKeyboardState = _keyboardState;
             _lastMouseState = _mouseState;
-            //if (_window.KeyboardState.IsKeyDown(Keys.Escape))
-            //    _window.Close();
 
-            //if (_window.KeyboardState.IsKeyPressed(Keys.Q))
-            //    _window.GetRenderer().ChangeMeshMode();
-
-            //if (_window.KeyboardState.IsKeyReleased(Keys.Space))
-            //    _window.ChangeIsGUI();
-
-            // WASD camera
             float currentFrame = (float)_window.UpdateTime;
             _deltaTime = currentFrame / _lastFrame;
             _lastFrame = currentFrame;
-
-            
 
             // mouse input
             _mouseState = _window.MouseState;
@@ -75,10 +74,7 @@ namespace Graphics
                 _deltaMouse = new(deltaX, deltaY);
                 _mousePos = new(_mouseState.X, _mouseState.Y);
             }
-
         }
-
-
 
         public static Vector2 GetMousePos()
         {
@@ -103,6 +99,11 @@ namespace Graphics
         public static float GetDeltaTime()
         {
             return _deltaTime;
+        }
+
+        public void SetWindow(Window window)
+        {
+            _window = window;
         }
 
     }

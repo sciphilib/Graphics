@@ -44,7 +44,7 @@ namespace Graphics
         }
         private void OnLoad()
         {
-            _camera = new(new Vector3(1.0f, 1.0f, 3.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
+            _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
 
@@ -113,10 +113,15 @@ namespace Graphics
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
-
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
+
+
+            Vector3 sunColor = Vector3.One;
+            Vector3 objectColor = new(1.0f, 0.5f, 0.2f);
+            _shader.Use();
+            _shader.SetVec3("lightColor", sunColor);
+            _shader.SetVec3("objectColor", objectColor);
         }
 
         private void OnRender()
@@ -158,7 +163,7 @@ namespace Graphics
 
             // sun's shader settings
             _sunShader?.Use();
-            Matrix4 SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, 6.0f));
+            Matrix4 SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, 3.0f));
             _sunShader?.SetMat4("model", SunModelMatrix);
             _sunShader?.SetMat4("view", viewMatrix);
             _sunShader?.SetMat4("projection", projectionMatrix);

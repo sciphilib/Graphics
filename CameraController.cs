@@ -33,6 +33,7 @@ namespace Graphics
                     _camera.Pitch = -89.0f;
             }
 
+            CameraKeyboardProcess();
             _camera.UpdateCameraVectors();
         }
 

@@ -20,14 +20,13 @@ namespace Graphics
         public float CameraSpeed { get; set; } = 0.05f;
         public float AspectRatio { get; set; }
         public float MouseSensitivity { get; set; } = 0.1f;
-        public float Yaw { get; set; } = -110.0f;
-        public float Pitch { get; set; } = -20.0f;
+        public float Yaw { get; set; } = -45.0f;
+        public float Pitch { get; set; } = -10.0f;
         public Camera(Vector3 position, Vector3 target, float aspectRation)
         {
             _cameraController = new(this);
             CameraPosition = position;
             CameraFront = -Vector3.Normalize(position - target);
-            UpdateCameraVectors();
             AspectRatio = aspectRation;
         }
 

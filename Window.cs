@@ -52,8 +52,17 @@ namespace Graphics
             base.OnUpdateFrame(args);
             OnUpdate?.Invoke();
 
-            if (_isGUI)
+            if (!_isGUI)
                 _renderer.GetCamera().GetCameraController().CameraUpdate(WindowInput.GetDeltaMouse(), true);
+
+            if (WindowInput.IsKeyDown(Keys.Escape))
+                Close();
+
+            if (WindowInput.IsKeyPressed(Keys.Q))
+                GetRenderer().ChangeMeshMode();
+
+            if (WindowInput.IsKeyPressed(Keys.Space))
+                ChangeIsGUI();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -88,7 +97,7 @@ namespace Graphics
             base.OnLoad();
             _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
             _renderer = new(this);
-            _windowInput = new(this);
+            _windowInput = WindowInput.getInstance(this);
         }
 
         protected override void OnUnload()
@@ -99,11 +108,6 @@ namespace Graphics
         public Renderer GetRenderer()
         {
             return _renderer;
-        }
-
-        public WindowInput GetWindowInput()
-        {
-            return _windowInput;
         }
 
         public void ChangeIsGUI()
