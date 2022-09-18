@@ -53,7 +53,11 @@ namespace Graphics
             OnUpdate?.Invoke();
 
             if (!_isGUI)
+            {
                 _renderer.GetCamera().GetCameraController().CameraUpdate(WindowInput.GetDeltaMouse(), true);
+            }
+            _renderer.GetCamera().GetCameraController().CameraKeyboardProcess();
+
 
             if (WindowInput.IsKeyDown(Keys.Escape))
                 Close();

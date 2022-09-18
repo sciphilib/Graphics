@@ -101,10 +101,5 @@ namespace Graphics
             return _deltaTime;
         }
 
-        public void SetWindow(Window window)
-        {
-            _window = window;
-        }
-
     }
 }

@@ -123,6 +123,10 @@ namespace Graphics
         {
             GL.Uniform3(GL.GetUniformLocation(Handle, name), value);
         }
+        public void SetVec3(string name, float x, float y, float z)
+        {
+            GL.Uniform3(GL.GetUniformLocation(Handle, name), x, y, z);
+        }
         public void SetVec4(string name, Vector4 value)
         {
             GL.Uniform4(GL.GetUniformLocation(Handle, name), value);
