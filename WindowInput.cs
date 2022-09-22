@@ -54,9 +54,10 @@ namespace Graphics
             _lastKeyboardState = _keyboardState;
             _lastMouseState = _mouseState;
 
-            float currentFrame = (float)_window.UpdateTime;
-            _deltaTime = currentFrame / _lastFrame;
-            _lastFrame = currentFrame;
+            //float currentFrame = (float)_window.UpdateTime;
+            //_deltaTime = currentFrame / _lastFrame;
+            _deltaTime = Window.GetDeltaTime();
+            //_lastFrame = currentFrame;
 
             // mouse input
             _mouseState = _window.MouseState;

@@ -1,5 +1,6 @@
 ﻿using Graphics.ImGUI;
 using OpenTK.Graphics.OpenGL;
+
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -24,11 +25,15 @@ namespace Graphics
         private OnEventCallback? OnRender;
         private OnEventCallback? OnDrawGUI;
 
+        private static float _deltaTime;
+
         private bool _isGUI;
         public Window(int width, int height, string title) :
             base(GameWindowSettings.Default, new NativeWindowSettings() { Size = new Vector2i(width, height),
-                Title = title, APIVersion = new Version(3, 3) })
+                Title = title, APIVersion = new Version(3, 3), NumberOfSamples = 4,
+                AlphaBits = 24, RedBits = 24, GreenBits = 24, BlueBits = 24, DepthBits = 16, StencilBits = 8})
         {
+            
             CenterWindow(new Vector2i(Size.X, Size.Y));
             _isGUI = false;
         }
@@ -50,6 +55,8 @@ namespace Graphics
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
+
+            _deltaTime = (float)args.Time;
             OnUpdate?.Invoke();
 
             if (!_isGUI)
@@ -122,6 +129,11 @@ namespace Graphics
         public bool GetIsGUI()
         {
             return _isGUI;
+        }
+
+        public static float GetDeltaTime()
+        {
+            return _deltaTime;
         }
     }
 }
