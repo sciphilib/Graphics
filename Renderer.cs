@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Graphics
 {
@@ -26,11 +27,15 @@ namespace Graphics
         private int sunVAO;
         private bool IsMeshMode = false;
         private Vector3[] pointLightPositions;
+        private DirectionLight _dirLight;
+        private static int _pointLightCount = 2;
+        private PointLight[] _pointLightsArray;
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new (0.0f, 0.0f, 3.0f);
+        static int currentItem = 0;
 
 
         public Renderer(Window window)
@@ -112,7 +117,6 @@ namespace Graphics
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
 
-
             // sun
             sunVAO = GL.GenVertexArray();
             GL.BindVertexArray(sunVAO);
@@ -122,7 +126,6 @@ namespace Graphics
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
-
 
             pointLightPositions = new Vector3[]
             {
@@ -135,26 +138,43 @@ namespace Graphics
             _shader.Use();
             _shader.SetVec3("lightColor", sunColor);
             _shader.SetVec3("objectColor", objectColor);
+            _shader.SetInt("shininess", 32);
+            
             // direction light
-            _shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-            _shader.SetVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-            _shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+            _dirLight = new(_shader);
+            _dirLight.SetAmbient(0.05f, 0.05f, 0.05f);
+            _dirLight.SetDiffuse(0.4f, 0.4f, 0.4f);
+            _dirLight.SetSpecular(0.5f, 0.5f, 0.5f);
+
+            _pointLightsArray = new PointLight[_pointLightCount];
+
             // point light 1
-            _shader.SetVec3("pointLights[0].position", pointLightPositions[0]);
-            _shader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-            _shader.SetVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-            _shader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-            _shader.SetFloat("pointLights[0].constant", 1.0f);
-            _shader.SetFloat("pointLights[0].linear", 0.09f);
-            _shader.SetFloat("pointLights[0].quadratic", 0.032f);
+            _pointLightsArray[0] = new(_shader, 0);
+            int index = _pointLightsArray[0].GetIndex();
+            _pointLightsArray[0].SetPosition(
+                pointLightPositions[index].X,
+                pointLightPositions[index].Y,
+                pointLightPositions[index].Z);
+            _pointLightsArray[0].SetAmbient(0.05f, 0.05f, 0.05f);
+            _pointLightsArray[0].SetDiffuse(0.8f, 0.8f, 0.8f);
+            _pointLightsArray[0].SetSpecular (1.0f, 1.0f, 1.0f);
+            _pointLightsArray[0].SetConstant(1.0f);
+            _pointLightsArray[0].SetLinear(0.09f);
+            _pointLightsArray[0].SetLinear(0.032f);
+
             // point light 2
-            _shader.SetVec3("pointLights[1].position", pointLightPositions[1]);
-            _shader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-            _shader.SetVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
-            _shader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-            _shader.SetFloat("pointLights[1].constant", 1.0f);
-            _shader.SetFloat("pointLights[1].linear", 0.09f);
-            _shader.SetFloat("pointLights[1].quadratic", 0.032f);
+            _pointLightsArray[1] = new(_shader, 1);
+            index = _pointLightsArray[1].GetIndex();
+            _pointLightsArray[1].SetPosition(
+                pointLightPositions[index].X,
+                pointLightPositions[index].Y,
+                pointLightPositions[index].Z);
+            _pointLightsArray[1].SetAmbient(0.05f, 0.05f, 0.05f);
+            _pointLightsArray[1].SetDiffuse(0.8f, 0.8f, 0.8f);
+            _pointLightsArray[1].SetSpecular(1.0f, 1.0f, 1.0f);
+            _pointLightsArray[1].SetConstant(1.0f);
+            _pointLightsArray[1].SetLinear(0.09f);
+            _pointLightsArray[1].SetLinear(0.032f);
         }
 
         private void OnRender()
@@ -164,6 +184,9 @@ namespace Graphics
 
             _shader?.Use();
             _shader?.SetVec3("dirLight.direction", -_sunPosition.X, -_sunPosition.Y, -_sunPosition.Z);
+            _dirLight.Update();
+            _pointLightsArray[0].Update();
+            _pointLightsArray[1].Update();
             Matrix4 modelMatrix = Matrix4.Identity;
             Matrix4 viewMatrix;
             Matrix4 projectionMatrix;
@@ -174,7 +197,6 @@ namespace Graphics
             rotMatrix = Matrix4.CreateRotationX(rotVec.X) * Matrix4.CreateRotationY(rotVec.Y) * Matrix4.CreateRotationZ(rotVec.Z);
             transMatrix = Matrix4.CreateTranslation(new Vector3(_objectPos.X, _objectPos.Y, _objectPos.Z));
             modelMatrix = rotMatrix * transMatrix;
-
 
             if (_camera != null)
             {
@@ -194,7 +216,6 @@ namespace Graphics
             _shader?.SetVec3("lightPos", _sunPosition.X, _sunPosition.Y, _sunPosition.Z);
             _shader?.SetVec3("viewPos", _camera.CameraPosition);
 
-
             GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);    
             GL.BindVertexArray(VAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
@@ -207,26 +228,43 @@ namespace Graphics
             _sunShader?.SetMat4("projection", projectionMatrix);
             GL.BindVertexArray(sunVAO);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-            foreach (var ligthPos in pointLightPositions)
+            foreach (var ligthPos in _pointLightsArray)
             {
-                SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(ligthPos);
+                Vector3 pos = new(ligthPos.GetPosition().X, ligthPos.GetPosition().Y, ligthPos.GetPosition().Z);
+                SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(pos);
                 _sunShader?.SetMat4("model", SunModelMatrix);
                 _sunShader?.SetMat4("view", viewMatrix);
                 _sunShader?.SetMat4("projection", projectionMatrix);
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             }
-            
         }
 
         private void OnImGuiDraw()
         {
             ImGui.SliderFloat3("Cube position", ref _objectPos, -5.0f, 5.0f);
             ImGui.SliderFloat3("Cube rotation", ref _objectRot, MathHelper.DegreesToRadians(0.0f), MathHelper.DegreesToRadians(360.0f));
-            ImGui.SliderFloat3("Sun position", ref _sunPosition, -5.0f, 5.0f);
+            if (ImGui.CollapsingHeader("Directional light"))
+            {
+                ImGui.SliderFloat3("Direction", ref _sunPosition, -5.0f, 5.0f);
+                ImGui.ColorEdit3("Ambient ", ref _dirLight.GetAmbient());
+                ImGui.ColorEdit3("Diffuse ", ref _dirLight.GetDiffuse());
+                ImGui.ColorEdit3("Specular ", ref _dirLight.GetSpecular());
+            };
+            if (ImGui.CollapsingHeader("Point light"))
+            {
+                string[] menu = new[] { "Point light 1", "Point light 2" };
+                ImGui.ListBox("Source", ref currentItem, menu, _pointLightCount);
+                ImGui.SliderFloat3("Position", ref _pointLightsArray[currentItem].GetPosition(), -5.0f, 5.0f);
+                ImGui.ColorEdit3("Ambient", ref _pointLightsArray[currentItem].GetAmbient(), ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("Diffuse", ref _pointLightsArray[currentItem].GetDiffuse(), ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("Specular", ref _pointLightsArray[currentItem].GetSpecular(), ImGuiColorEditFlags.Float);
+                ImGui.InputFloat("Constant", ref _pointLightsArray[currentItem].GetConstant(), 0.1f);
+                ImGui.InputFloat("Linear", ref _pointLightsArray[currentItem].GetLinear(), 0.1f);
+                ImGui.InputFloat("Quadratic", ref _pointLightsArray[currentItem].GetQuadratic(), 0.1f);
+            };
             Util.CheckGLError("End of frame");
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
-
         private void OnUnload()
         {
             _shader?.Dispose();
