@@ -18,13 +18,18 @@ namespace Graphics
     {
         private GameWindow _window;
         private Camera _camera;
+        //private Parser _parser;
 
         // scene variables
         private Shader _shader;
         private Shader _sunShader;
+        private Shader _surfaceShader;
         private int VBO;
         private int VAO;
         private int sunVAO;
+        private int surfaceEBO;
+        private int surfaceVBO;
+        private int surfaceVAO;
         private bool IsMeshMode = false;
         private Vector3[] pointLightPositions;
         private DirectionLight _dirLight;
@@ -34,14 +39,14 @@ namespace Graphics
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
-        private System.Numerics.Vector3 _sunPosition = new (0.0f, 0.0f, 3.0f);
+        private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
         static int currentItem = 0;
 
 
         public Renderer(Window window)
         {
             _window = window;
-            OnLoad();   
+            OnLoad();
             window.BindRenderCallback(OnRender);
             window.BindDrawGUICallback(OnImGuiDraw);
         }
@@ -53,8 +58,39 @@ namespace Graphics
         private void OnLoad()
         {
             _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
+            //_camera = new(new Vector3(0, -39.5f, 1520f), new Vector3(0, -39.5f, 1520f), (float)_window.Size.X / _window.Size.Y);
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
+            _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
+
+            float[]? surfaceVertices;
+
+            Parser.Parse("data\\20x20x6.txt", out surfaceVertices);
+            //Parser.Parse("data\\surface1.txt", out surfaceVertices);
+           
+            int[] surfaceIndexes = new int[400 * 6];
+            surfaceIndexes[0] = 0;
+            surfaceIndexes[1] = 1;
+            surfaceIndexes[2] = 3;
+            surfaceIndexes[3] = 1;
+            surfaceIndexes[4] = 2;
+            surfaceIndexes[5] = 3;
+            int eboIndex = 6;
+            while (eboIndex < 400 * 6)
+            {
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
+                eboIndex++;
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
+                eboIndex++;
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 2;
+                eboIndex++;
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 2];
+                eboIndex++;
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
+                eboIndex++;
+                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
+                eboIndex++;
+            }
 
             IsMeshMode = false;
             GL.ClearColor(new Color4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -104,6 +140,20 @@ namespace Graphics
                 -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
             };
 
+            // surface
+            surfaceVBO = GL.GenBuffer();
+            surfaceVAO = GL.GenVertexArray();
+            surfaceEBO = GL.GenBuffer();
+            GL.BindVertexArray(surfaceVAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, surfaceVertices.Length * sizeof(float), surfaceVertices, BufferUsageHint.StaticDraw);
+            // ebo
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, surfaceEBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceIndexes.Length * sizeof(int), surfaceIndexes, BufferUsageHint.StaticDraw);
+            // position attribute
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+
             // object
             VBO = GL.GenBuffer();
             VAO = GL.GenVertexArray();
@@ -139,7 +189,7 @@ namespace Graphics
             _shader.SetVec3("lightColor", sunColor);
             _shader.SetVec3("objectColor", objectColor);
             _shader.SetInt("shininess", 32);
-            
+
             // direction light
             _dirLight = new(_shader);
             _dirLight.SetAmbient(0.05f, 0.05f, 0.05f);
@@ -157,7 +207,7 @@ namespace Graphics
                 pointLightPositions[index].Z);
             _pointLightsArray[0].SetAmbient(0.05f, 0.05f, 0.05f);
             _pointLightsArray[0].SetDiffuse(0.8f, 0.8f, 0.8f);
-            _pointLightsArray[0].SetSpecular (1.0f, 1.0f, 1.0f);
+            _pointLightsArray[0].SetSpecular(1.0f, 1.0f, 1.0f);
             _pointLightsArray[0].SetConstant(1.0f);
             _pointLightsArray[0].SetLinear(0.09f);
             _pointLightsArray[0].SetLinear(0.032f);
@@ -216,31 +266,43 @@ namespace Graphics
             _shader?.SetVec3("lightPos", _sunPosition.X, _sunPosition.Y, _sunPosition.Z);
             _shader?.SetVec3("viewPos", _camera.CameraPosition);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);    
-            GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);
+            //GL.BindVertexArray(VAO);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            // surface
+            _surfaceShader?.Use();
+            // todo model matrix
+            Matrix4 surfaceModelMatrix = Matrix4.CreateTranslation(new Vector3(-40450, -2442.58f, 704200)) * Matrix4.CreateScale(0.00025f);
+            _surfaceShader?.SetMat4("model", surfaceModelMatrix);
+            _surfaceShader?.SetMat4("view", viewMatrix);
+            _surfaceShader?.SetMat4("projection", projectionMatrix);
+            GL.BindVertexArray(surfaceVAO);
+            GL.DrawElements(PrimitiveType.Triangles, 6 * 400, DrawElementsType.UnsignedInt, 0);
+
 
             // sun's shader settings
-            _sunShader?.Use();
-            Matrix4 SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new Vector3(_sunPosition.X, _sunPosition.Y, _sunPosition.Z));
-            _sunShader?.SetMat4("model", SunModelMatrix);
-            _sunShader?.SetMat4("view", viewMatrix);
-            _sunShader?.SetMat4("projection", projectionMatrix);
-            GL.BindVertexArray(sunVAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-            foreach (var ligthPos in _pointLightsArray)
-            {
-                Vector3 pos = new(ligthPos.GetPosition().X, ligthPos.GetPosition().Y, ligthPos.GetPosition().Z);
-                SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(pos);
-                _sunShader?.SetMat4("model", SunModelMatrix);
-                _sunShader?.SetMat4("view", viewMatrix);
-                _sunShader?.SetMat4("projection", projectionMatrix);
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-            }
+            //_sunShader?.Use();
+            //Matrix4 SunModelMatrix = Matrix4.CreateTranslation(new Vector3(_sunPosition.X, _sunPosition.Y, _sunPosition.Z));
+            //_sunShader?.SetMat4("model", SunModelMatrix);
+            //_sunShader?.SetMat4("view", viewMatrix);
+            //_sunShader?.SetMat4("projection", projectionMatrix);
+            //GL.BindVertexArray(sunVAO);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            //foreach (var ligthPos in _pointLightsArray)
+            //{
+            //    Vector3 pos = new(ligthPos.GetPosition().X, ligthPos.GetPosition().Y, ligthPos.GetPosition().Z);
+            //    SunModelMatrix = Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(pos);
+            //    _sunShader?.SetMat4("model", SunModelMatrix);
+            //    _sunShader?.SetMat4("view", viewMatrix);
+            //    _sunShader?.SetMat4("projection", projectionMatrix);
+            //    GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            //}
         }
 
         private void OnImGuiDraw()
         {
+            ImGui.Text($"X: {Math.Round(_camera.CameraPosition.X)}, Y: {Math.Round(_camera.CameraPosition.Y)}, Z: {Math.Round(_camera.CameraPosition.Z)} \tCamera position");
             ImGui.SliderFloat3("Cube position", ref _objectPos, -5.0f, 5.0f);
             ImGui.SliderFloat3("Cube rotation", ref _objectRot, MathHelper.DegreesToRadians(0.0f), MathHelper.DegreesToRadians(360.0f));
             if (ImGui.CollapsingHeader("Directional light"))

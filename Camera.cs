@@ -17,7 +17,7 @@ namespace Graphics
         public Vector3 CameraFront { get; set; }
         public Vector3 CameraWorldUp { get; set; } = Vector3.UnitY;
         public float FOV { get; set; } = 45.0f;
-        public float CameraSpeed { get; set; } = 2.0f;
+        public float CameraSpeed { get; set; } = 6.0f;
         public float AspectRatio { get; set; }
         public float MouseSensitivity { get; set; } = 0.1f;
         public float Yaw { get; set; } = -45.0f;
