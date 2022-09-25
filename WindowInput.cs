@@ -14,7 +14,6 @@ namespace Graphics
         private static Window _window;
         
         // time variables
-        private static float _lastFrame = 0.0f;
         private static float _deltaTime = 0.0f;
 
         // mouse state variables
@@ -54,10 +53,7 @@ namespace Graphics
             _lastKeyboardState = _keyboardState;
             _lastMouseState = _mouseState;
 
-            //float currentFrame = (float)_window.UpdateTime;
-            //_deltaTime = currentFrame / _lastFrame;
             _deltaTime = Window.GetDeltaTime();
-            //_lastFrame = currentFrame;
 
             // mouse input
             _mouseState = _window.MouseState;

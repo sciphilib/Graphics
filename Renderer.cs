@@ -28,14 +28,17 @@ namespace Graphics
         private int VAO;
         private int sunVAO;
         private int surfaceEBO;
-        private int surfaceIndicesVBO;
-        //private int surfaceColorsVBO;
+        private int surfaceVerticesVBO;
+        private int surfaceColorsVBO;
         private int surfaceVAO;
+        private int quadCount;
         private bool IsMeshMode = false;
         private Vector3[] pointLightPositions;
         private DirectionLight _dirLight;
         private static int _pointLightCount = 2;
         private PointLight[] _pointLightsArray;
+        private float[]? surfaceColorArray;
+
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
@@ -43,6 +46,8 @@ namespace Graphics
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
         private System.Numerics.Vector3 palette1 = new(0.325f, 0.958f, 0.123f);
         private System.Numerics.Vector3 palette2 = new(0.123f, 0.456f, 0.954f);
+        private System.Numerics.Vector3 lastPalette1;
+        private System.Numerics.Vector3 lastPalette2;
         static int currentItem = 0;
 
 
@@ -61,39 +66,20 @@ namespace Graphics
         private void OnLoad()
         {
             _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
-            //_camera = new(new Vector3(0, -39.5f, 1520f), new Vector3(0, -39.5f, 1520f), (float)_window.Size.X / _window.Size.Y);
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
             float[]? surfaceVertices;
+            Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount);
+            //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount);
+            BufferGenerator.GenerateColor(quadCount, palette1, palette2, out surfaceColorArray);
 
-            Parser.Parse("data\\20x20x6.txt", palette1, palette2, out surfaceVertices);
-            //Parser.Parse("data\\surface1.txt", out surfaceVertices);
-           
-            int[] surfaceIndexes = new int[400 * 6];
-            surfaceIndexes[0] = 0;
-            surfaceIndexes[1] = 1;
-            surfaceIndexes[2] = 3;
-            surfaceIndexes[3] = 1;
-            surfaceIndexes[4] = 2;
-            surfaceIndexes[5] = 3;
-            int eboIndex = 6;
-            while (eboIndex < 400 * 6)
-            {
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
-                eboIndex++;
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
-                eboIndex++;
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 2;
-                eboIndex++;
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 2];
-                eboIndex++;
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
-                eboIndex++;
-                surfaceIndexes[eboIndex] = surfaceIndexes[eboIndex - 1] + 1;
-                eboIndex++;
-            }
+            lastPalette1 = palette1;
+            lastPalette2 = palette2;
+
+            int[]? surfaceIndices;
+            BufferGenerator.GenerateEBOelements(quadCount, out surfaceIndices);
 
             IsMeshMode = false;
             GL.ClearColor(new Color4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -107,12 +93,12 @@ namespace Graphics
                 -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
                 -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-                 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
@@ -144,20 +130,26 @@ namespace Graphics
             };
 
             // surface
-            surfaceIndicesVBO = GL.GenBuffer();
-            //surfaceColorsVBO = GL.GenBuffer();
+            surfaceVerticesVBO = GL.GenBuffer();
+            surfaceColorsVBO = GL.GenBuffer();
             surfaceVAO = GL.GenVertexArray();
             surfaceEBO = GL.GenBuffer();
+            // indices vbo
             GL.BindVertexArray(surfaceVAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceIndicesVBO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
             GL.BufferData(BufferTarget.ArrayBuffer, surfaceVertices.Length * sizeof(float), surfaceVertices, BufferUsageHint.StaticDraw);
+            // colors vbo
+            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, surfaceColorArray.Length * sizeof(float), surfaceColorArray, BufferUsageHint.DynamicDraw);
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, surfaceEBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceIndexes.Length * sizeof(int), surfaceIndexes, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceIndices.Length * sizeof(int), surfaceIndices, BufferUsageHint.StaticDraw);
             // position attribute
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(1);
 
 
@@ -184,11 +176,11 @@ namespace Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
 
-            pointLightPositions = new Vector3[]
-            {
-                new ( 0.7f,  0.2f,  2.0f),
-                new ( 2.3f, -3.3f, -4.0f),
-            };
+            //pointLightPositions = new Vector3[]
+            //{
+            //    new ( 0.7f,  0.2f,  2.0f),
+            //    new ( 2.3f, -3.3f, -4.0f),
+            //};
 
             Vector3 sunColor = Vector3.One;
             Vector3 objectColor = new(1.0f, 0.5f, 0.2f);
@@ -239,6 +231,14 @@ namespace Graphics
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            if (lastPalette1 != palette1 || lastPalette2 != palette2)
+            {
+                BufferGenerator.GenerateColor(quadCount, palette1, palette2, out surfaceColorArray);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
+            }
+            
+
             _shader?.Use();
             _shader?.SetVec3("dirLight.direction", -_sunPosition.X, -_sunPosition.Y, -_sunPosition.Z);
             //_dirLight.Update();
@@ -285,7 +285,7 @@ namespace Graphics
             _surfaceShader?.SetMat4("view", viewMatrix);
             _surfaceShader?.SetMat4("projection", projectionMatrix);
             GL.BindVertexArray(surfaceVAO);
-            GL.DrawElements(PrimitiveType.Triangles, 6 * 400, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
 
             // sun's shader settings
@@ -305,6 +305,8 @@ namespace Graphics
             //    _sunShader?.SetMat4("projection", projectionMatrix);
             //    GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             //}
+            lastPalette1 = palette1;
+            lastPalette2 = palette2;
         }
 
         private void OnImGuiDraw()
