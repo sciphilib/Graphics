@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -80,7 +81,7 @@ namespace Graphics
 
                     foreach (var obj1 in elements)
                     {
-                        verticesArray[verticesArrayIndex] = Convert.ToSingle(obj1);
+                        verticesArray[verticesArrayIndex] = Convert.ToSingle(obj1, CultureInfo.InvariantCulture);
                         verticesArrayIndex++;
                     }
                 }

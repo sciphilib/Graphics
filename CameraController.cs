@@ -54,7 +54,14 @@ namespace Graphics
             {
                 _camera.CameraPosition += _camera.CameraSpeed * WindowInput.GetDeltaTime() * Vector3.Normalize(Vector3.Cross(_camera.CameraFront, _camera.CameraUp));
             }
-
+            if (WindowInput.IsKeyDown(Keys.LeftControl))
+            {
+                _camera.CameraPosition += -(_camera.CameraSpeed * WindowInput.GetDeltaTime() * Vector3.Normalize(_camera.CameraUp));
+            }
+            if (WindowInput.IsKeyDown(Keys.LeftShift))
+            {
+                _camera.CameraPosition += _camera.CameraSpeed * WindowInput.GetDeltaTime() * Vector3.Normalize(_camera.CameraUp);
+            }
         }
     }
 }
