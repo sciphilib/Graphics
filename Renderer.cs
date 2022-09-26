@@ -18,7 +18,6 @@ namespace Graphics
     {
         private GameWindow _window;
         private Camera _camera;
-        //private Parser _parser;
 
         // scene variables
         private Shader _shader;
@@ -38,14 +37,15 @@ namespace Graphics
         private static int _pointLightCount = 2;
         private PointLight[] _pointLightsArray;
         private float[]? surfaceColorArray;
+        private float[]? surfaceVertices;
 
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
-        private System.Numerics.Vector3 palette1 = new(0.325f, 0.958f, 0.123f);
-        private System.Numerics.Vector3 palette2 = new(0.123f, 0.456f, 0.954f);
+        private System.Numerics.Vector3 palette1 = new(0.958f, 0.197f, 0.123f);
+        private System.Numerics.Vector3 palette2 = new(0.097f, 0.012f, 0.593f);
         private System.Numerics.Vector3 lastPalette1;
         private System.Numerics.Vector3 lastPalette2;
         static int currentItem = 0;
@@ -70,7 +70,6 @@ namespace Graphics
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
-            float[]? surfaceVertices;
             Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount);
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount);
             BufferGenerator.GenerateColor(quadCount, palette1, palette2, out surfaceColorArray);
@@ -280,7 +279,7 @@ namespace Graphics
             // surface
             _surfaceShader?.Use();
             // todo model matrix
-            Matrix4 surfaceModelMatrix = Matrix4.CreateTranslation(new Vector3(-40450, -2442.58f, 704200)) * Matrix4.CreateScale(0.00025f);
+            Matrix4 surfaceModelMatrix = Matrix4.CreateTranslation(-new Vector3(surfaceVertices[0], surfaceVertices[1], surfaceVertices[2])) * Matrix4.CreateScale(0.00025f);
             _surfaceShader?.SetMat4("model", surfaceModelMatrix);
             _surfaceShader?.SetMat4("view", viewMatrix);
             _surfaceShader?.SetMat4("projection", projectionMatrix);
@@ -333,7 +332,7 @@ namespace Graphics
                 ImGui.InputFloat("Linear", ref _pointLightsArray[currentItem].GetLinear(), 0.1f);
                 ImGui.InputFloat("Quadratic", ref _pointLightsArray[currentItem].GetQuadratic(), 0.1f);
             };
-            if (ImGui.CollapsingHeader("Palette colors"))
+            if (ImGui.CollapsingHeader("Surface colors"))
             {
                 ImGui.ColorEdit3("Min color", ref palette1, ImGuiColorEditFlags.Float);
                 ImGui.ColorEdit3("Max color", ref palette2, ImGuiColorEditFlags.Float);

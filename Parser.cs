@@ -15,7 +15,7 @@ namespace Graphics
             string? line;
             string[]? splittedArray;
 
-            quadCount = 0;
+            int quadsTotal = 0;
             int verticesArrayIndex = 0;
             int verticesArraySize = 0;
 
@@ -25,6 +25,7 @@ namespace Graphics
             {
                 Console.WriteLine("Empty file.");
                 verticesArray = null;
+                quadCount = 0;
                 return;
             }
             else
@@ -32,14 +33,11 @@ namespace Graphics
                 splittedArray = line?.Split(' ');
                 int i = Convert.ToInt32(splittedArray[0]);
                 int j = Convert.ToInt32(splittedArray[1]);
-                quadCount = i * j;
+                quadsTotal = i * j;
             }
 
-            //verticesArray = new float[quadCount * 12 + 400];
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            verticesArraySize = quadCount * 12;
+            verticesArraySize = quadsTotal * 12;
             verticesArray = new float[verticesArraySize];
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             string[] elements;
             string row;
@@ -75,6 +73,7 @@ namespace Graphics
                         else
                         {
                             //Console.WriteLine("Not Active");
+                            verticesArraySize -= 12;
                             break;
                         }
                     }
@@ -86,6 +85,7 @@ namespace Graphics
                     }
                 }
             }
+            quadCount = verticesArraySize / 12;
         }
     }
 }

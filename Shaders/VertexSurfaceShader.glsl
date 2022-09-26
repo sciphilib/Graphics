@@ -6,11 +6,11 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec3 ourColor; // output a color to the fragment shader
+out vec3 ourColor;
 
 
 void main()
 {
     gl_Position = projection * view * model * vec4(aPosition, 1.0f);
-    ourColor = aColor; // set ourColor to the input color we got from the vertex data
+    ourColor = aColor; 
 }
