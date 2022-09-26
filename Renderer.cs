@@ -71,8 +71,8 @@ namespace Graphics
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
-            Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHight, out maxSurfaceHight);
-            //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount);
+            //Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHight, out maxSurfaceHight);
+            Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount, out minSurfaceHight, out maxSurfaceHight);
             BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHight, maxSurfaceHight, out surfaceColorArray);
 
             lastPalette1 = palette1;

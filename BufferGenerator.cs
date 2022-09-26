@@ -16,6 +16,8 @@ namespace Graphics
 
             int index = 0;
             int surfaceVerticesIndex = 1;
+            Console.WriteLine($"MIN {min}");
+            Console.WriteLine($"MAX {max}");
 
             while (index < arraySize)
             {
@@ -61,8 +63,11 @@ namespace Graphics
         }
 
         private static float Map(float value, float min1, float max1, float min2, float max2)
-        {
-            return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+        {   
+            if (min1 == max1)
+                return min2 + (value - min1) * (max2 - min2) / 1;
+            else
+                return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
         }
     }
 }
