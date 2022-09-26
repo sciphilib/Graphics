@@ -31,6 +31,7 @@ namespace Graphics
         private int surfaceColorsVBO;
         private int surfaceVAO;
         private int quadCount;
+        private float minSurfaceHight, maxSurfaceHight;
         private bool IsMeshMode = false;
         private Vector3[] pointLightPositions;
         private DirectionLight _dirLight;
@@ -70,9 +71,9 @@ namespace Graphics
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
-            Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount);
+            Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHight, out maxSurfaceHight);
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount);
-            BufferGenerator.GenerateColor(quadCount, palette1, palette2, out surfaceColorArray);
+            BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHight, maxSurfaceHight, out surfaceColorArray);
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
@@ -175,11 +176,11 @@ namespace Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
 
-            //pointLightPositions = new Vector3[]
-            //{
-            //    new ( 0.7f,  0.2f,  2.0f),
-            //    new ( 2.3f, -3.3f, -4.0f),
-            //};
+            pointLightPositions = new Vector3[]
+            {
+                new ( 0.7f,  0.2f,  2.0f),
+                new ( 2.3f, -3.3f, -4.0f),
+            };
 
             Vector3 sunColor = Vector3.One;
             Vector3 objectColor = new(1.0f, 0.5f, 0.2f);
@@ -196,33 +197,33 @@ namespace Graphics
 
             _pointLightsArray = new PointLight[_pointLightCount];
 
-            //// point light 1
-            //_pointLightsArray[0] = new(_shader, 0);
-            //int index = _pointLightsArray[0].GetIndex();
-            //_pointLightsArray[0].SetPosition(
-            //    pointLightPositions[index].X,
-            //    pointLightPositions[index].Y,
-            //    pointLightPositions[index].Z);
-            //_pointLightsArray[0].SetAmbient(0.05f, 0.05f, 0.05f);
-            //_pointLightsArray[0].SetDiffuse(0.8f, 0.8f, 0.8f);
-            //_pointLightsArray[0].SetSpecular(1.0f, 1.0f, 1.0f);
-            //_pointLightsArray[0].SetConstant(1.0f);
-            //_pointLightsArray[0].SetLinear(0.09f);
-            //_pointLightsArray[0].SetLinear(0.032f);
+            // point light 1
+            _pointLightsArray[0] = new(_shader, 0);
+            int index = _pointLightsArray[0].GetIndex();
+            _pointLightsArray[0].SetPosition(
+                pointLightPositions[index].X,
+                pointLightPositions[index].Y,
+                pointLightPositions[index].Z);
+            _pointLightsArray[0].SetAmbient(0.05f, 0.05f, 0.05f);
+            _pointLightsArray[0].SetDiffuse(0.8f, 0.8f, 0.8f);
+            _pointLightsArray[0].SetSpecular(1.0f, 1.0f, 1.0f);
+            _pointLightsArray[0].SetConstant(1.0f);
+            _pointLightsArray[0].SetLinear(0.09f);
+            _pointLightsArray[0].SetLinear(0.032f);
 
-            //// point light 2
-            //_pointLightsArray[1] = new(_shader, 1);
-            //index = _pointLightsArray[1].GetIndex();
-            //_pointLightsArray[1].SetPosition(
-            //    pointLightPositions[index].X,
-            //    pointLightPositions[index].Y,
-            //    pointLightPositions[index].Z);
-            //_pointLightsArray[1].SetAmbient(0.05f, 0.05f, 0.05f);
-            //_pointLightsArray[1].SetDiffuse(0.8f, 0.8f, 0.8f);
-            //_pointLightsArray[1].SetSpecular(1.0f, 1.0f, 1.0f);
-            //_pointLightsArray[1].SetConstant(1.0f);
-            //_pointLightsArray[1].SetLinear(0.09f);
-            //_pointLightsArray[1].SetLinear(0.032f);
+            // point light 2
+            _pointLightsArray[1] = new(_shader, 1);
+            index = _pointLightsArray[1].GetIndex();
+            _pointLightsArray[1].SetPosition(
+                pointLightPositions[index].X,
+                pointLightPositions[index].Y,
+                pointLightPositions[index].Z);
+            _pointLightsArray[1].SetAmbient(0.05f, 0.05f, 0.05f);
+            _pointLightsArray[1].SetDiffuse(0.8f, 0.8f, 0.8f);
+            _pointLightsArray[1].SetSpecular(1.0f, 1.0f, 1.0f);
+            _pointLightsArray[1].SetConstant(1.0f);
+            _pointLightsArray[1].SetLinear(0.09f);
+            _pointLightsArray[1].SetLinear(0.032f);
         }
 
         private void OnRender()
@@ -232,7 +233,7 @@ namespace Graphics
 
             if (lastPalette1 != palette1 || lastPalette2 != palette2)
             {
-                BufferGenerator.GenerateColor(quadCount, palette1, palette2, out surfaceColorArray);
+                BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHight, maxSurfaceHight, out surfaceColorArray);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
                 GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
             }

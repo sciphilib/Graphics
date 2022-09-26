@@ -11,7 +11,7 @@ namespace Graphics
 {
     static public class Parser
     {
-        static public void Parse(string filePath, out float[]? verticesArray, out int quadCount)
+        static public void Parse(string filePath, out float[]? verticesArray, out int quadCount, out float minHeight, out float maxHeight)
         {
             string? line;
             string[]? splittedArray;
@@ -19,6 +19,9 @@ namespace Graphics
             int quadsTotal = 0;
             int verticesArrayIndex = 0;
             int verticesArraySize = 0;
+            minHeight = 0;
+            maxHeight = 0;
+            bool isFirstHeighValue = true;
 
             StreamReader reader = new(filePath, Encoding.UTF8);
             line = reader.ReadLine();
@@ -79,10 +82,29 @@ namespace Graphics
                         }
                     }
 
+                    if (isFirstHeighValue)
+                    {
+                        minHeight = maxHeight = Convert.ToSingle(elements[1], CultureInfo.InvariantCulture);
+                        isFirstHeighValue = false;
+                    }
+
+                    int coordinate = 0;
                     foreach (var obj1 in elements)
                     {
                         verticesArray[verticesArrayIndex] = Convert.ToSingle(obj1, CultureInfo.InvariantCulture);
+                        if (coordinate == 1)
+                        {
+                            if (verticesArray[verticesArrayIndex] > maxHeight)
+                            {
+                                maxHeight = verticesArray[verticesArrayIndex];
+                            }
+                            else if (verticesArray[verticesArrayIndex] < minHeight)
+                            {
+                                minHeight = verticesArray[verticesArrayIndex];
+                            }
+                        }
                         verticesArrayIndex++;
+                        coordinate++;
                     }
                 }
             }

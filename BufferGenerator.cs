@@ -9,28 +9,26 @@ namespace Graphics
 {
     static public class BufferGenerator
     {
-        public static void GenerateColor(int verticesCount, Vector3 palette1, Vector3 palette2, out float[]? colorArray)
+        public static void GenerateColor(float[] surfaceVertices, int verticesCount, Vector3 palette1, Vector3 palette2, float min, float max, out float[]? colorArray)
         {
             int arraySize = verticesCount * 12;
             colorArray = new float[arraySize];
 
-            float property = 0;
-            float deltaProperty = 10.0f / verticesCount;
-
             int index = 0;
+            int surfaceVerticesIndex = 1;
 
             while (index < arraySize)
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    colorArray[index] = Map(property, 0.0f, 10.0f, palette1.X, palette2.X);
+                    colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], min, max, palette1.X, palette2.X);
                     index++;
-                    colorArray[index] = Map(property, 0.0f, 10.0f, palette1.Y, palette2.Y);
+                    colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], min, max, palette1.Y, palette2.Y);
                     index++;
-                    colorArray[index] = Map(property, 0.0f, 10.0f, palette1.Z, palette2.Z);
+                    colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], max, max, palette1.Z, palette2.Z);
                     index++;
+                    surfaceVerticesIndex += 3;
                 }
-                property += deltaProperty;
             }
 
         }
