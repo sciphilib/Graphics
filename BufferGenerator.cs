@@ -25,7 +25,7 @@ namespace Graphics
                     index++;
                     colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], min, max, palette1.Y, palette2.Y);
                     index++;
-                    colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], max, max, palette1.Z, palette2.Z);
+                    colorArray[index] = Map(surfaceVertices[surfaceVerticesIndex], min, max, palette1.Z, palette2.Z);
                     index++;
                     surfaceVerticesIndex += 3;
                 }
