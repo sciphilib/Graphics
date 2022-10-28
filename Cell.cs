@@ -12,9 +12,6 @@ namespace Graphics
         public Vector3[] topCorners;
         public Vector3[] bottomCorners;
         public bool isActive;
-        //public int[] _indices;
-
-        //private int minIndex;
 
         public Cell()
         {

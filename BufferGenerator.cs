@@ -63,53 +63,6 @@ namespace Graphics
             }
         }
 
-        public static void GenerateGridEBO(int cellsCount, out int[] indicesArray)
-        {
-            indicesArray = new int[cellsCount * 36];
-            int currentIndex = 0;
-            int minIndex;
-            for (int i = 0; i < cellsCount; i++)
-            {
-                minIndex = 3 * i;
-                indicesArray[currentIndex++] = minIndex;
-                indicesArray[currentIndex++] = minIndex + 1;
-                indicesArray[currentIndex++] = minIndex + 3;
-                indicesArray[currentIndex++] = minIndex;
-                indicesArray[currentIndex++] = minIndex + 1;
-                indicesArray[currentIndex++] = minIndex + 5;
-                indicesArray[currentIndex++] = minIndex;
-                indicesArray[currentIndex++] = minIndex + 3;
-                indicesArray[currentIndex++] = minIndex + 7;
-                indicesArray[currentIndex++] = minIndex;
-                indicesArray[currentIndex++] = minIndex + 4;
-                indicesArray[currentIndex++] = minIndex + 5;
-                indicesArray[currentIndex++] = minIndex;
-                indicesArray[currentIndex++] = minIndex + 4;
-                indicesArray[currentIndex++] = minIndex + 7;
-                indicesArray[currentIndex++] = minIndex + 1;
-                indicesArray[currentIndex++] = minIndex + 2;
-                indicesArray[currentIndex++] = minIndex + 3;
-                indicesArray[currentIndex++] = minIndex + 1;
-                indicesArray[currentIndex++] = minIndex + 2;
-                indicesArray[currentIndex++] = minIndex + 6;
-                indicesArray[currentIndex++] = minIndex + 1;
-                indicesArray[currentIndex++] = minIndex + 5;
-                indicesArray[currentIndex++] = minIndex + 6;
-                indicesArray[currentIndex++] = minIndex + 2;
-                indicesArray[currentIndex++] = minIndex + 3;
-                indicesArray[currentIndex++] = minIndex + 7;
-                indicesArray[currentIndex++] = minIndex + 2;
-                indicesArray[currentIndex++] = minIndex + 6;
-                indicesArray[currentIndex++] = minIndex + 7;
-                indicesArray[currentIndex++] = minIndex + 4;
-                indicesArray[currentIndex++] = minIndex + 5;
-                indicesArray[currentIndex++] = minIndex + 7;
-                indicesArray[currentIndex++] = minIndex + 5;
-                indicesArray[currentIndex++] = minIndex + 6;
-                indicesArray[currentIndex++] = minIndex + 7;
-            }
-        }
-
         public static float Map(float value, float min1, float max1, float min2, float max2)
         {   
             if (min1 == max1)
