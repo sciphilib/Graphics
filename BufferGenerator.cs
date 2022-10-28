@@ -11,7 +11,8 @@ namespace Graphics
     {
         public static void GenerateColor(float[] surfaceVertices, int verticesCount, Vector3 palette1, Vector3 palette2, float min, float max, out float[]? colorArray)
         {
-            int arraySize = verticesCount * 12;
+            //int arraySize = verticesCount * 12; // for surface
+            int arraySize = verticesCount; // for grid
             colorArray = new float[arraySize];
 
             int index = 0;
@@ -62,7 +63,54 @@ namespace Graphics
             }
         }
 
-        private static float Map(float value, float min1, float max1, float min2, float max2)
+        public static void GenerateGridEBO(int cellsCount, out int[] indicesArray)
+        {
+            indicesArray = new int[cellsCount * 36];
+            int currentIndex = 0;
+            int minIndex;
+            for (int i = 0; i < cellsCount; i++)
+            {
+                minIndex = 3 * i;
+                indicesArray[currentIndex++] = minIndex;
+                indicesArray[currentIndex++] = minIndex + 1;
+                indicesArray[currentIndex++] = minIndex + 3;
+                indicesArray[currentIndex++] = minIndex;
+                indicesArray[currentIndex++] = minIndex + 1;
+                indicesArray[currentIndex++] = minIndex + 5;
+                indicesArray[currentIndex++] = minIndex;
+                indicesArray[currentIndex++] = minIndex + 3;
+                indicesArray[currentIndex++] = minIndex + 7;
+                indicesArray[currentIndex++] = minIndex;
+                indicesArray[currentIndex++] = minIndex + 4;
+                indicesArray[currentIndex++] = minIndex + 5;
+                indicesArray[currentIndex++] = minIndex;
+                indicesArray[currentIndex++] = minIndex + 4;
+                indicesArray[currentIndex++] = minIndex + 7;
+                indicesArray[currentIndex++] = minIndex + 1;
+                indicesArray[currentIndex++] = minIndex + 2;
+                indicesArray[currentIndex++] = minIndex + 3;
+                indicesArray[currentIndex++] = minIndex + 1;
+                indicesArray[currentIndex++] = minIndex + 2;
+                indicesArray[currentIndex++] = minIndex + 6;
+                indicesArray[currentIndex++] = minIndex + 1;
+                indicesArray[currentIndex++] = minIndex + 5;
+                indicesArray[currentIndex++] = minIndex + 6;
+                indicesArray[currentIndex++] = minIndex + 2;
+                indicesArray[currentIndex++] = minIndex + 3;
+                indicesArray[currentIndex++] = minIndex + 7;
+                indicesArray[currentIndex++] = minIndex + 2;
+                indicesArray[currentIndex++] = minIndex + 6;
+                indicesArray[currentIndex++] = minIndex + 7;
+                indicesArray[currentIndex++] = minIndex + 4;
+                indicesArray[currentIndex++] = minIndex + 5;
+                indicesArray[currentIndex++] = minIndex + 7;
+                indicesArray[currentIndex++] = minIndex + 5;
+                indicesArray[currentIndex++] = minIndex + 6;
+                indicesArray[currentIndex++] = minIndex + 7;
+            }
+        }
+
+        public static float Map(float value, float min1, float max1, float min2, float max2)
         {   
             if (min1 == max1)
                 return min2 + (value - min1) * (max2 - min2) / 1;
