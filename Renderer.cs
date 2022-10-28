@@ -40,19 +40,7 @@ namespace Graphics
         private float[]? surfaceColorArray;
         private float[]? surfaceVertices;
 
-        private int gridCellsCount;
-        private float[]? gridCoordinates;
-        private bool[]? gridVerticesStatus;
-        private Grid grid;
-        private int gridEBO;
-        private int gridVerticesVBO;
-        private int gridColorsVBO;
-        private int gridVAO;
-        private Shader _gridShader;
-        int[] gridIndices;
         MeshRenderer gridMeshRenderer;
-
-
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
@@ -83,7 +71,7 @@ namespace Graphics
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
-            _gridShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
+            //_gridShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
             Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
@@ -92,9 +80,6 @@ namespace Graphics
 
             Grid grid;
             GridParser.Parse("data\\grid.bin", out grid);
-            //float[] color = new float[grid.Size * 3 * 8];
-            //for (int i = 0; i < color.Length; i++)
-            //    color[i] = 0.3f;
             grid.PrintGrid();
             Mesh gridMesh;
             MeshLoader.CreateGridMesh(grid, out gridMesh);
