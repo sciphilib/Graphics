@@ -11,7 +11,7 @@ namespace Graphics
     public class GridParser
     {
 
-        static public void Parse(string filePath, out Grid grid)
+        static public Grid Parse(string filePath)
         {
             BinaryReader binReader = new(File.Open(filePath, FileMode.Open), Encoding.UTF8);
             int sizeX, sizeY, sizeZ;
@@ -20,7 +20,7 @@ namespace Graphics
             sizeX = binReader.ReadInt32();
             sizeY = binReader.ReadInt32();
             sizeZ = binReader.ReadInt32();
-            grid = new Grid(sizeX, sizeY, sizeZ);
+            Grid grid = new(sizeX, sizeY, sizeZ);
 
             for (int k = 0; k < sizeZ; k++)
             {
@@ -38,7 +38,7 @@ namespace Graphics
                             grid.GetCell(i, j, k).topCorners[corner].X = binReader.ReadSingle();
                             grid.GetCell(i, j, k).topCorners[corner].Y = binReader.ReadSingle();
                             grid.GetCell(i, j, k).topCorners[corner].Z = binReader.ReadSingle();
-                            
+
                             grid.GetCell(i, j, k).bottomCorners[corner].X = binReader.ReadSingle();
                             grid.GetCell(i, j, k).bottomCorners[corner].Y = binReader.ReadSingle();
                             grid.GetCell(i, j, k).bottomCorners[corner].Z = binReader.ReadSingle();
@@ -46,6 +46,7 @@ namespace Graphics
                     }
                 }
             }
+            return grid;
         }
     }
 }

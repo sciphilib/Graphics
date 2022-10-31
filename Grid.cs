@@ -41,7 +41,6 @@ namespace Graphics
                 {
                     Console.WriteLine($"Top {corner}: {cell.topCorners[corner].X}, {cell.topCorners[corner].Y}, {cell.topCorners[corner].Z}");
                     Console.WriteLine($"Bot {corner}: {cell.bottomCorners[corner].X}, {cell.bottomCorners[corner].Y}, {cell.bottomCorners[corner].Z}");
-
                 }
             }
         }

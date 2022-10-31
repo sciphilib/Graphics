@@ -15,19 +15,24 @@ namespace Graphics
     {
         public string VertexShaderPath { get; set; }
         public string FragmentShaderPath { get; set; }
-        public Mesh Mesh { get; set; }
         public float[] Color { get; set; }
 
-        private int VAO, VBO, colorVBO, EBO;
-        private Shader shader;
+        public Mesh mesh;
+        public int VAO, VBO, colorVBO, EBO;
+        public Shader shader;
 
         public MeshRenderer(Mesh mesh, string vertexShaderPath, string fragmentShaderPath, float[] color)
         {
             VertexShaderPath = vertexShaderPath;
             FragmentShaderPath = fragmentShaderPath;
             Color = color;
-            Mesh = mesh;
+            this.mesh = mesh;
             shader = new(VertexShaderPath, FragmentShaderPath);
+        }
+
+        ~MeshRenderer()
+        {
+            shader.Dispose();
         }
         
         public void GenBuffers()
@@ -43,13 +48,13 @@ namespace Graphics
             // vertices vbo
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, Mesh.vertices.Length * sizeof(float), Mesh.vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, mesh.vertices.Length * sizeof(float), mesh.vertices, BufferUsageHint.StaticDraw);
             // colors vbo
             GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
             GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(float), Color, BufferUsageHint.DynamicDraw);
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, Mesh.indices.Length * sizeof(float), Mesh.indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, mesh.indices.Length * sizeof(int), mesh.indices, BufferUsageHint.StaticDraw);
             
         }
 
@@ -74,20 +79,19 @@ namespace Graphics
             GL.BindVertexArray(0);
         }
 
-        public void Render()
+        public void Render(Matrix4 view, Matrix4 proj)
         {
             shader.Use();
-            Matrix4 modelMatrix = Matrix4.CreateTranslation(-new Vector3(Mesh.vertices[0], Mesh.vertices[1], Mesh.vertices[2])) * Matrix4.CreateScale(0.0000000025f);
-            Matrix4 viewMatrix = Matrix4.Identity;
-            Matrix4 projectionMatrix = Matrix4.Identity;
+            Matrix4 modelMatrix = Matrix4.CreateTranslation(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2])) * Matrix4.CreateScale(0.0025f);
+            //Matrix4 modelMatrix = Matrix4.Identity;
+            Matrix4 viewMatrix = view;
+            Matrix4 projectionMatrix = proj;
             shader.SetMat4("model", modelMatrix);
             shader.SetMat4("view", viewMatrix);
             shader.SetMat4("projection", projectionMatrix);
             GL.BindVertexArray(VAO);
-            GL.DrawElements(PrimitiveType.Triangles, Mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
-
         }
-
     }
 }

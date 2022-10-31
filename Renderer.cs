@@ -67,6 +67,7 @@ namespace Graphics
         }
         private void OnLoad()
         {
+            Random rand = new();
             _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
@@ -78,26 +79,25 @@ namespace Graphics
             BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
 
 
-            Grid grid;
-            GridParser.Parse("data\\grid.bin", out grid);
-            grid.PrintGrid();
-            Mesh gridMesh;
-            MeshLoader.CreateGridMesh(grid, out gridMesh);
-            //foreach (var i in gridMesh.indices)
-            //    Console.WriteLine(i);
-            float[] gridColors;
-            BufferGenerator.GenerateColor(gridMesh.vertices, gridMesh.vertices.Length, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out gridColors);
+            Grid grid = GridParser.Parse("data\\grid.bin");
+            Mesh gridMesh = MeshLoader.CreateGridMesh(grid);
+            float[] gridColors = new float[gridMesh.vertices.Length];
+            int currColor = 0;
+            while(currColor < gridMesh.vertices.Length)
+            {
+                gridColors[currColor++] = 0.8f;
+                gridColors[currColor++] = 0.4f;
+                gridColors[currColor++] = 0.4f;
+            }
             gridMeshRenderer = new(gridMesh, "Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors);
+            gridMeshRenderer.Init();
+
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
 
             int[]? surfaceIndices;
             BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
-            foreach (var i in surfaceIndices)
-            {
-                Console.WriteLine(i);
-            }
 
             IsMeshMode = false;
             GL.ClearColor(new Color4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -170,33 +170,6 @@ namespace Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(1);
-
-           
-            // grid
-
-            //gridVerticesVBO = GL.GenBuffer();
-            ////gridColorsVBO = GL.GenBuffer();
-            //gridVAO = GL.GenVertexArray();
-            //gridEBO = GL.GenBuffer();
-            //// vertices vbo
-            //GL.BindVertexArray(gridVAO);
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, gridVerticesVBO);
-            //GL.BufferData(BufferTarget.ArrayBuffer, gridCoordinates.Length * sizeof(float), gridCoordinates, BufferUsageHint.StaticDraw);
-            //// colors vbo
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-            //GL.BufferData(BufferTarget.ArrayBuffer, gridColors.Length * sizeof(float), gridColors, BufferUsageHint.DynamicDraw);
-            //// ebo
-            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, gridEBO);
-            //GL.BufferData(BufferTarget.ElementArrayBuffer, gridIndices.Length * sizeof(float), gridIndices, BufferUsageHint.StaticDraw);
-            //// position attribute
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, gridVerticesVBO);
-            //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            //GL.EnableVertexAttribArray(0);
-            //// color attribute
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-            //GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            //GL.EnableVertexAttribArray(1);
-
 
             // object
             VBO = GL.GenBuffer();
@@ -333,16 +306,7 @@ namespace Graphics
             GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
-            gridMeshRenderer.Init();
-            gridMeshRenderer.Render();
-            //_gridShader?.Use();
-            //Matrix4 gridModelMatrix = Matrix4.CreateTranslation(-new Vector3(gridCoordinates[0], gridCoordinates[1], gridCoordinates[2])) * Matrix4.CreateScale(0.0000000025f);
-            //_gridShader?.SetMat4("model", gridModelMatrix);
-            //_gridShader?.SetMat4("view", viewMatrix);
-            //_gridShader?.SetMat4("projection", projectionMatrix);
-            //GL.BindVertexArray(gridVAO);
-            ////GL.DrawElements(PrimitiveType.Triangles, (3 * 2 * 6) * gridCellsCount, DrawElementsType.UnsignedInt, 0);
-            //GL.DrawElements(PrimitiveType.Triangles, gridIndices.Length, DrawElementsType.UnsignedInt, 0);
+            gridMeshRenderer.Render(viewMatrix, projectionMatrix);
 
             //sun's shader settings
             _sunShader?.Use();
@@ -400,6 +364,8 @@ namespace Graphics
         private void OnUnload()
         {
             _shader?.Dispose();
+            _sunShader?.Dispose();
+            _surfaceShader?.Dispose();
         }
 
         public void ChangeMeshMode()
