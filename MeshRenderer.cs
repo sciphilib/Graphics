@@ -82,8 +82,7 @@ namespace Graphics
         public void Render(Matrix4 view, Matrix4 proj)
         {
             shader.Use();
-            Matrix4 modelMatrix = Matrix4.CreateTranslation(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2])) * Matrix4.CreateScale(0.0025f);
-            //Matrix4 modelMatrix = Matrix4.Identity;
+            Matrix4 modelMatrix = Matrix4.CreateTranslation(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2])) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(180)) * Matrix4.CreateScale(0.0025f);
             Matrix4 viewMatrix = view;
             Matrix4 projectionMatrix = proj;
             shader.SetMat4("model", modelMatrix);

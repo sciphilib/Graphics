@@ -47,8 +47,8 @@ namespace Graphics
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.One;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
-        private System.Numerics.Vector3 palette1 = new(0.250f, 0.171f, 0.134f);
-        private System.Numerics.Vector3 palette2 = new(0.873f, 0.000f, 0.000f);
+        private System.Numerics.Vector3 palette1 = new(0.211f, 0.884f, 1.000f);
+        private System.Numerics.Vector3 palette2 = new(0.326f, 0.024f, 0.024f);
         private System.Numerics.Vector3 lastPalette1;
         private System.Numerics.Vector3 lastPalette2;
         static int currentItem = 0;
@@ -73,20 +73,17 @@ namespace Graphics
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
             _surfaceShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
-            //_gridShader = new("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl");
 
-            Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
+            //Parser.Parse("data\\20x20x6.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
-            BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
+            //BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
 
 
             Grid grid = GridParser.Parse("data\\grid.bin");
             Mesh gridMesh = MeshLoader.CreateGridMesh(grid);
             GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
             GridPropertiesLoader.Load(0, grid, gridProperties);
-            gridColors = GridProperties.CreateColorArray(17, grid, palette1, palette2);
-            //Console.WriteLine(gridMesh.vertices.Length);
-            //Console.WriteLine(gridColors.Length);
+            gridColors = GridProperties.CreateColorArray(grid, palette1, palette2);
             gridMeshRenderer = new(gridMesh, "Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors);
             gridMeshRenderer.Init();
 
@@ -94,8 +91,8 @@ namespace Graphics
             lastPalette1 = palette1;
             lastPalette2 = palette2;
 
-            int[]? surfaceIndices;
-            BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
+            //int[]? surfaceIndices;
+            //BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
 
             IsMeshMode = false;
             GL.ClearColor(new Color4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -146,41 +143,41 @@ namespace Graphics
             };
 
             // surface
-            surfaceVerticesVBO = GL.GenBuffer();
-            surfaceColorsVBO = GL.GenBuffer();
-            surfaceVAO = GL.GenVertexArray();
-            surfaceEBO = GL.GenBuffer();
-            // vertices vbo
-            GL.BindVertexArray(surfaceVAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, surfaceVertices.Length * sizeof(float), surfaceVertices, BufferUsageHint.StaticDraw);
-            // colors vbo
-            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, surfaceColorArray.Length * sizeof(float), surfaceColorArray, BufferUsageHint.DynamicDraw);
-            // ebo
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, surfaceEBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceIndices.Length * sizeof(int), surfaceIndices, BufferUsageHint.StaticDraw);
-            // position attribute
-            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            // color attribute
-            GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(1);
+            //surfaceVerticesVBO = GL.GenBuffer();
+            //surfaceColorsVBO = GL.GenBuffer();
+            //surfaceVAO = GL.GenVertexArray();
+            //surfaceEBO = GL.GenBuffer();
+            //// vertices vbo
+            //GL.BindVertexArray(surfaceVAO);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
+            //GL.BufferData(BufferTarget.ArrayBuffer, surfaceVertices.Length * sizeof(float), surfaceVertices, BufferUsageHint.StaticDraw);
+            //// colors vbo
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+            //GL.BufferData(BufferTarget.ArrayBuffer, surfaceColorArray.Length * sizeof(float), surfaceColorArray, BufferUsageHint.DynamicDraw);
+            //// ebo
+            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, surfaceEBO);
+            //GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceIndices.Length * sizeof(int), surfaceIndices, BufferUsageHint.StaticDraw);
+            //// position attribute
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceVerticesVBO);
+            //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            //GL.EnableVertexAttribArray(0);
+            //// color attribute
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+            //GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            //GL.EnableVertexAttribArray(1);
 
             // object
             VBO = GL.GenBuffer();
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
+            //VAO = GL.GenVertexArray();
+            //GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
             // position attribute
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-            // normal attribute
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            //// normal attribute
+            //GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            //GL.EnableVertexAttribArray(1);
 
             // sun
             sunVAO = GL.GenVertexArray();
@@ -188,13 +185,12 @@ namespace Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
 
             pointLightPositions = new Vector3[]
             {
-                new ( 0.7f,  0.2f,  2.0f),
+                new ( 0.7f,  0.2f,  -5.0f),
                 new ( 2.3f, -3.3f, -4.0f),
             };
 

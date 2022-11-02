@@ -21,29 +21,13 @@ namespace Graphics
             this.properties = properties;
         }
 
-        static public double[] CreateColorArray(int propertyNumber, Grid grid, Vector3 palette1, Vector3 palette2)
+        static public double[] CreateColorArray(Grid grid, Vector3 palette1, Vector3 palette2)
         {
             int verticesPerCell = 8;
             int colorValuePerVert = 3;
             double[] array = new double[verticesPerCell * colorValuePerVert * grid.Size];
 
             int index = 0;
-            //for (int i = 0; i < grid.SizeX; i++)
-            //{
-            //    for (int j = 0; j < grid.SizeY; j++)
-            //    {
-            //        for (int k = 0; k < grid.SizeZ; k++)
-            //        {
-            //            for (int vertex = 0; vertex < 8; vertex++)
-            //            {
-
-            //                array[index++] = Map(grid.GetCell(j, k, i).property, grid.MinHeight, grid.MaxHeight, (double)palette1.X, (double)palette2.X);
-            //                array[index++] = Map(grid.GetCell(j, k, i).property, grid.MinHeight, grid.MaxHeight, (double)palette1.Y, (double)palette2.Y);
-            //                array[index++] = Map(grid.GetCell(j, k, i).property, grid.MinHeight, grid.MaxHeight, (double)palette1.Z, (double)palette2.Z);
-            //            }
-            //        }
-            //    }
-            //}
             for (int k = 0; k < grid.SizeZ; k++)
             {
                 for (int j = 0; j < grid.SizeX; j++)
@@ -53,9 +37,9 @@ namespace Graphics
                         for (int vertex = 0; vertex < 8; vertex++)
                         {
 
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinHeight, grid.MaxHeight, (double)palette1.X, (double)palette2.X);
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinHeight, grid.MaxHeight, (double)palette1.Y, (double)palette2.Y);
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinHeight, grid.MaxHeight, (double)palette1.Z, (double)palette2.Z);
+                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
+                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
+                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
                         }
                     }
                 }

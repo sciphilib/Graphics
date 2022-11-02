@@ -11,17 +11,20 @@ namespace Graphics
         static public void Load(int propertyNumber, Grid grid, GridProperties gridProperties)
         {
             int counter = 0;
-            for (int k = 0; k < grid.SizeZ; k++)
+            grid.MinProperty = grid.MaxProperty = gridProperties.properties[propertyNumber, 0];
+            for (int i = 0; i < grid.SizeX; i++)
             {
-                for (int j = 0; j < grid.SizeX; j++)
+                for (int j = 0; j < grid.SizeY; j++)
                 {
-                    for (int i = 0; i < grid.SizeY; i++)
+                    for (int k = 0; k < grid.SizeZ; k++)
                     {
-                        grid.GetCell(j, i, k).property = gridProperties.properties[propertyNumber, counter++];
+                        grid.GetCell(i, j, k).property = gridProperties.properties[propertyNumber, counter++];
+                        var value = grid.GetCell(i, j, k).property;
+                        grid.MaxProperty = value > grid.MaxProperty ? value : grid.MaxProperty;
+                        grid.MinProperty = value < grid.MinProperty ? value : grid.MinProperty;
                     }
                 }
             }
-            //Console.WriteLine(counter);
         }
     }
 }

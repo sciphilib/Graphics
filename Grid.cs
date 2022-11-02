@@ -17,8 +17,8 @@ namespace Graphics
         public int SizeY { get; }
         public int SizeZ { get; }
 
-        public double MaxHeight { get; set; }
-        public double MinHeight { get; set; }
+        public double MaxProperty { get; set; }
+        public double MinProperty { get; set; }
 
         private Cell[,,] cells;
 
@@ -38,8 +38,8 @@ namespace Graphics
             Console.WriteLine($"Z = {SizeZ}");
             Console.WriteLine($"Y = {SizeY}");
             Console.WriteLine($"X = {SizeX}");
-            Console.WriteLine($"Max Height = {MaxHeight}");
-            Console.WriteLine($"Min Height = {MinHeight}");
+            Console.WriteLine($"Max Height = {MaxProperty}");
+            Console.WriteLine($"Min Height = {MinProperty}");
             foreach (var cell in cells)
             {
                 Console.WriteLine($"isActive = {cell.isActive}");
