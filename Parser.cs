@@ -35,8 +35,8 @@ namespace Graphics
             else
             {
                 splittedArray = line?.Split(' ');
-                int i = Convert.ToInt32(splittedArray[0]);
-                int j = Convert.ToInt32(splittedArray[1]);
+                int i = Convert.ToInt32(splittedArray[0], CultureInfo.InvariantCulture);
+                int j = Convert.ToInt32(splittedArray[1], CultureInfo.InvariantCulture);
                 quadsTotal = i * j;
             }
 

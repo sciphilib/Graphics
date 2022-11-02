@@ -41,13 +41,14 @@ namespace Graphics
         private float[]? surfaceVertices;
 
         MeshRenderer gridMeshRenderer;
+        double[] gridColors;
 
         // imgui variables
-        private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.Zero;
+        private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.One;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
-        private System.Numerics.Vector3 palette1 = new(0.958f, 0.897f, 0.123f);
-        private System.Numerics.Vector3 palette2 = new(0.097f, 0.912f, 0.593f);
+        private System.Numerics.Vector3 palette1 = new(0.250f, 0.171f, 0.134f);
+        private System.Numerics.Vector3 palette2 = new(0.873f, 0.000f, 0.000f);
         private System.Numerics.Vector3 lastPalette1;
         private System.Numerics.Vector3 lastPalette2;
         static int currentItem = 0;
@@ -81,14 +82,11 @@ namespace Graphics
 
             Grid grid = GridParser.Parse("data\\grid.bin");
             Mesh gridMesh = MeshLoader.CreateGridMesh(grid);
-            float[] gridColors = new float[gridMesh.vertices.Length];
-            int currColor = 0;
-            while(currColor < gridMesh.vertices.Length)
-            {
-                gridColors[currColor++] = 0.8f;
-                gridColors[currColor++] = 0.4f;
-                gridColors[currColor++] = 0.4f;
-            }
+            GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
+            GridPropertiesLoader.Load(0, grid, gridProperties);
+            gridColors = GridProperties.CreateColorArray(17, grid, palette1, palette2);
+            //Console.WriteLine(gridMesh.vertices.Length);
+            //Console.WriteLine(gridColors.Length);
             gridMeshRenderer = new(gridMesh, "Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors);
             gridMeshRenderer.Init();
 
@@ -284,26 +282,26 @@ namespace Graphics
                 projectionMatrix = Matrix4.Identity;
             }
 
-            // object's shader settings
-            _shader?.SetMat4("model", modelMatrix);
-            _shader?.SetMat4("view", viewMatrix);
-            _shader?.SetMat4("projection", projectionMatrix);
-            _shader?.SetVec3("lightPos", _sunPosition.X, _sunPosition.Y, _sunPosition.Z);
-            _shader?.SetVec3("viewPos", _camera.CameraPosition);
-
             GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);
-            GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            // object's shader settings
+            //_shader?.SetMat4("model", modelMatrix);
+            //_shader?.SetMat4("view", viewMatrix);
+            //_shader?.SetMat4("projection", projectionMatrix);
+            //_shader?.SetVec3("lightPos", _sunPosition.X, _sunPosition.Y, _sunPosition.Z);
+            //_shader?.SetVec3("viewPos", _camera.CameraPosition);
+            //GL.BindVertexArray(VAO);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             // surface
-            _surfaceShader?.Use();
-            // todo model matrix
-            Matrix4 surfaceModelMatrix = Matrix4.CreateTranslation(-new Vector3(surfaceVertices[0], surfaceVertices[1], surfaceVertices[2])) * Matrix4.CreateScale(0.00025f);
-            _surfaceShader?.SetMat4("model", surfaceModelMatrix);
-            _surfaceShader?.SetMat4("view", viewMatrix);
-            _surfaceShader?.SetMat4("projection", projectionMatrix);
-            GL.BindVertexArray(surfaceVAO);
-            GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
+            //_surfaceShader?.Use();
+            //// todo model matrix
+            //Matrix4 surfaceModelMatrix = Matrix4.CreateTranslation(-new Vector3(surfaceVertices[0], surfaceVertices[1], surfaceVertices[2])) * Matrix4.CreateScale(0.00025f);
+            //_surfaceShader?.SetMat4("model", surfaceModelMatrix);
+            //_surfaceShader?.SetMat4("view", viewMatrix);
+            //_surfaceShader?.SetMat4("projection", projectionMatrix);
+            //GL.BindVertexArray(surfaceVAO);
+            //GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
             gridMeshRenderer.Render(viewMatrix, projectionMatrix);

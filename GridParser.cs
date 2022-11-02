@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
@@ -22,6 +23,10 @@ namespace Graphics
             sizeZ = binReader.ReadInt32();
             Grid grid = new(sizeX, sizeY, sizeZ);
 
+            binReader.BaseStream.Position = 4 * 5 + 1;
+            grid.MinHeight = grid.MaxHeight = binReader.ReadSingle();
+            binReader.BaseStream.Position = 12;
+
             for (int k = 0; k < sizeZ; k++)
             {
                 for (int i = 0; i < sizeX; i++)
@@ -42,6 +47,24 @@ namespace Graphics
                             grid.GetCell(i, j, k).bottomCorners[corner].X = binReader.ReadSingle();
                             grid.GetCell(i, j, k).bottomCorners[corner].Y = binReader.ReadSingle();
                             grid.GetCell(i, j, k).bottomCorners[corner].Z = binReader.ReadSingle();
+
+                            float topValue = grid.GetCell(i, j, k).topCorners[corner].Y;
+                            float botValue = grid.GetCell(i, j, k).bottomCorners[corner].Y;
+                            float biggerValue, smallerValue;
+
+                            if (topValue > botValue)
+                            {
+                                biggerValue = topValue;
+                                smallerValue = botValue;
+                            }
+                            else
+                            {
+                                biggerValue = botValue;
+                                smallerValue = topValue;
+                            }
+
+                            grid.MaxHeight = biggerValue > grid.MaxHeight ? biggerValue : grid.MaxHeight;
+                            grid.MinHeight = smallerValue < grid.MinHeight ? smallerValue : grid.MinHeight;
                         }
                     }
                 }

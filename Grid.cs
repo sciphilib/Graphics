@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -15,6 +16,9 @@ namespace Graphics
         public int SizeX { get; }
         public int SizeY { get; }
         public int SizeZ { get; }
+
+        public double MaxHeight { get; set; }
+        public double MinHeight { get; set; }
 
         private Cell[,,] cells;
 
@@ -34,6 +38,8 @@ namespace Graphics
             Console.WriteLine($"Z = {SizeZ}");
             Console.WriteLine($"Y = {SizeY}");
             Console.WriteLine($"X = {SizeX}");
+            Console.WriteLine($"Max Height = {MaxHeight}");
+            Console.WriteLine($"Min Height = {MinHeight}");
             foreach (var cell in cells)
             {
                 Console.WriteLine($"isActive = {cell.isActive}");
@@ -42,6 +48,7 @@ namespace Graphics
                     Console.WriteLine($"Top {corner}: {cell.topCorners[corner].X}, {cell.topCorners[corner].Y}, {cell.topCorners[corner].Z}");
                     Console.WriteLine($"Bot {corner}: {cell.bottomCorners[corner].X}, {cell.bottomCorners[corner].Y}, {cell.bottomCorners[corner].Z}");
                 }
+                Console.WriteLine($"Property: {cell.property}");
             }
         }
         public ref Cell GetCell(int i, int j, int k)

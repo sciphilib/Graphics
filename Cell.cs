@@ -12,6 +12,7 @@ namespace Graphics
         public Vector3[] topCorners;
         public Vector3[] bottomCorners;
         public bool isActive;
+        public double property;
 
         public Cell()
         {

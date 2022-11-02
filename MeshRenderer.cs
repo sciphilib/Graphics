@@ -15,13 +15,13 @@ namespace Graphics
     {
         public string VertexShaderPath { get; set; }
         public string FragmentShaderPath { get; set; }
-        public float[] Color { get; set; }
+        public double[] Color { get; set; }
 
         public Mesh mesh;
         public int VAO, VBO, colorVBO, EBO;
         public Shader shader;
 
-        public MeshRenderer(Mesh mesh, string vertexShaderPath, string fragmentShaderPath, float[] color)
+        public MeshRenderer(Mesh mesh, string vertexShaderPath, string fragmentShaderPath, double[] color)
         {
             VertexShaderPath = vertexShaderPath;
             FragmentShaderPath = fragmentShaderPath;
@@ -51,7 +51,7 @@ namespace Graphics
             GL.BufferData(BufferTarget.ArrayBuffer, mesh.vertices.Length * sizeof(float), mesh.vertices, BufferUsageHint.StaticDraw);
             // colors vbo
             GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(float), Color, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.DynamicDraw);
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, mesh.indices.Length * sizeof(int), mesh.indices, BufferUsageHint.StaticDraw);
@@ -66,7 +66,7 @@ namespace Graphics
             GL.EnableVertexAttribArray(0);
             // color attribute
             GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Double, false, 3 * sizeof(double), 0);
             GL.EnableVertexAttribArray(1);
         }
 
