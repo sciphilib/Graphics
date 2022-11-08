@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graphics.ECS;
 
 namespace Graphics
 {
-    public class Mesh
+    public class Mesh : Component
     {
         public float[] vertices;
         public int[] indices;

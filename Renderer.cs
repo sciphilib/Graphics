@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Graphics.ECS;
 
 namespace Graphics
 {
@@ -40,7 +41,7 @@ namespace Graphics
         private float[]? surfaceColorArray;
         private float[]? surfaceVertices;
 
-        MeshRenderer gridMeshRenderer;
+        Grid grid;
         double[] gridColors;
 
         // imgui variables
@@ -68,7 +69,6 @@ namespace Graphics
         }
         private void OnLoad()
         {
-            Random rand = new();
             _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
             _shader = new("Shaders\\VertexLightingShader.glsl", "Shaders\\FragmentLightingShader.glsl");
             _sunShader = new("Shaders\\VertexSunShader.glsl", "Shaders\\FragmentSunShader.glsl");
@@ -78,14 +78,21 @@ namespace Graphics
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
             //BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
 
-
-            Grid grid = GridParser.Parse("data\\grid.bin");
-            Mesh gridMesh = MeshLoader.CreateGridMesh(grid);
+            grid = GridParser.Parse("data\\grid.bin");
             GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
             GridPropertiesLoader.Load(0, grid, gridProperties);
             gridColors = GridProperties.CreateColorArray(grid, palette1, palette2);
-            gridMeshRenderer = new(gridMesh, "Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors);
-            gridMeshRenderer.Init();
+
+            grid.AddComponent(new Transform());
+            grid.AddComponent(GridMeshLoader.CreateGridMesh(grid));
+            grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors));
+
+            var mesh = grid.componentManager.GetComponent<Mesh>();
+            grid.GetComponent<Transform>().Translate(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+            grid.GetComponent<Transform>().RotateX(180);
+            grid.GetComponent<Transform>().Scale(0.0025f);
+
+            grid.GetComponent<MeshRenderer>().Init();
 
 
             lastPalette1 = palette1;
@@ -300,7 +307,7 @@ namespace Graphics
             //GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
-            gridMeshRenderer.Render(viewMatrix, projectionMatrix);
+            grid.GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
 
             //sun's shader settings
             _sunShader?.Use();

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Graphics.ECS;
 
 
 
 namespace Graphics
 {
-    public class MeshRenderer
+    public class MeshRenderer : Component
     {
         public string VertexShaderPath { get; set; }
         public string FragmentShaderPath { get; set; }
@@ -21,12 +22,11 @@ namespace Graphics
         public int VAO, VBO, colorVBO, EBO;
         public Shader shader;
 
-        public MeshRenderer(Mesh mesh, string vertexShaderPath, string fragmentShaderPath, double[] color)
+        public MeshRenderer(string vertexShaderPath, string fragmentShaderPath, double[] color)
         {
             VertexShaderPath = vertexShaderPath;
             FragmentShaderPath = fragmentShaderPath;
             Color = color;
-            this.mesh = mesh;
             shader = new(VertexShaderPath, FragmentShaderPath);
         }
 
@@ -55,7 +55,6 @@ namespace Graphics
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, mesh.indices.Length * sizeof(int), mesh.indices, BufferUsageHint.StaticDraw);
-            
         }
 
         public void SetAttribArray()
@@ -72,6 +71,8 @@ namespace Graphics
 
         public void Init()
         {
+            mesh = Owner.GetComponent<Mesh>();
+
             GenBuffers();
             BindBuffers();
             SetAttribArray();
@@ -82,12 +83,10 @@ namespace Graphics
         public void Render(Matrix4 view, Matrix4 proj)
         {
             shader.Use();
-            Matrix4 modelMatrix = Matrix4.CreateTranslation(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2])) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(180)) * Matrix4.CreateScale(0.0025f);
-            Matrix4 viewMatrix = view;
-            Matrix4 projectionMatrix = proj;
-            shader.SetMat4("model", modelMatrix);
-            shader.SetMat4("view", viewMatrix);
-            shader.SetMat4("projection", projectionMatrix);
+            var transform = mesh.Owner?.GetComponent<Transform>();
+            shader.SetMat4("model", transform.transform);
+            shader.SetMat4("view", view);
+            shader.SetMat4("projection", proj);
             GL.BindVertexArray(VAO);
             GL.DrawElements(PrimitiveType.Triangles, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

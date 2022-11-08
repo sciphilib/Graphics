@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Graphics.ECS;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Drawing;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class Grid
+    public class Grid : Entity
     {
         public int Capacity { get; }
         public int Size { get; set; }
