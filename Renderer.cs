@@ -300,6 +300,7 @@ namespace Graphics
                 projectionMatrix = Matrix4.Identity;
             }
 
+            GL.LineWidth(2);
             GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);
 
             // object's shader settings
