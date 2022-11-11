@@ -21,9 +21,16 @@ namespace Graphics.ECS
             componentManager.AddComponent(component, this);
         }
 
-        public T GetComponent<T>() where T : Component
+        public T? GetComponent<T>() where T : Component
         {
-            return componentManager.GetComponent<T>();
+            if (componentManager.HasComponent<T>())
+            {
+                return componentManager.GetComponent<T>();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

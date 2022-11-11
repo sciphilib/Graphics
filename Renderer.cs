@@ -42,6 +42,7 @@ namespace Graphics
         private float[]? surfaceVertices;
 
         Grid grid;
+        GridOutline gridOutline;
         double[] gridColors;
 
         // imgui variables
@@ -78,21 +79,35 @@ namespace Graphics
             //Parser.Parse("data\\surface1.txt", out surfaceVertices, out quadCount, out minSurfaceHeight, out maxSurfaceHeight);
             //BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
 
+
+            //grid
             grid = GridParser.Parse("data\\grid.bin");
             GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
             GridPropertiesLoader.Load(0, grid, gridProperties);
             gridColors = GridProperties.CreateColorArray(grid, palette1, palette2);
 
             grid.AddComponent(new Transform());
-            grid.AddComponent(GridMeshLoader.CreateGridMesh(grid));
+            grid.AddComponent(GridMesh.Create(grid));
             grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors));
 
-            var mesh = grid.componentManager.GetComponent<Mesh>();
-            grid.GetComponent<Transform>().Translate(-new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
-            grid.GetComponent<Transform>().RotateX(180);
-            grid.GetComponent<Transform>().Scale(0.0025f);
+            var gridMesh = grid.componentManager.GetComponent<Mesh>();
+            grid.GetComponent<Transform>()?.Translate(-new Vector3(gridMesh.vertices[0], gridMesh.vertices[1], gridMesh.vertices[2]));
+            grid.GetComponent<Transform>()?.RotateX(180);
+            grid.GetComponent<Transform>()?.Scale(0.0025f);
 
-            grid.GetComponent<MeshRenderer>().Init();
+            grid.GetComponent<MeshRenderer>()?.Init();
+
+            // grid outline
+            gridOutline = new();
+            gridOutline.AddComponent(new Transform());
+            gridOutline.AddComponent(GridOutlineMesh.Create(grid));
+            gridOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
+
+            var outlineMesh = gridOutline.componentManager.GetComponent<Mesh>();
+            gridOutline.GetComponent<Transform>()?.Translate(-new Vector3(outlineMesh.vertices[0], outlineMesh.vertices[1], outlineMesh.vertices[2]));
+            gridOutline.GetComponent<Transform>()?.RotateX(180);
+            gridOutline.GetComponent<Transform>()?.Scale(0.0025f);
+            gridOutline.GetComponent<MeshRenderer>()?.Init();
 
 
             lastPalette1 = palette1;
@@ -307,7 +322,8 @@ namespace Graphics
             //GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
-            grid.GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            grid.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix, PrimitiveType.Triangles);
+            gridOutline.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix, PrimitiveType.Lines);
 
             //sun's shader settings
             _sunShader?.Use();

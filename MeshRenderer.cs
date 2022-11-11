@@ -16,9 +16,9 @@ namespace Graphics
     {
         public string VertexShaderPath { get; set; }
         public string FragmentShaderPath { get; set; }
-        public double[] Color { get; set; }
+        public double[]? Color { get; set; }
 
-        public Mesh mesh;
+        public Mesh? mesh;
         public int VAO, VBO, colorVBO, EBO;
         public Shader shader;
 
@@ -27,6 +27,13 @@ namespace Graphics
             VertexShaderPath = vertexShaderPath;
             FragmentShaderPath = fragmentShaderPath;
             Color = color;
+            shader = new(VertexShaderPath, FragmentShaderPath);
+        }
+
+        public MeshRenderer(string vertexShaderPath, string fragmentShaderPath)
+        {
+            VertexShaderPath = vertexShaderPath;
+            FragmentShaderPath = fragmentShaderPath;
             shader = new(VertexShaderPath, FragmentShaderPath);
         }
 
@@ -39,7 +46,8 @@ namespace Graphics
         {
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
-            colorVBO = GL.GenBuffer();
+            if (Color != null)
+                colorVBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
         }
 
@@ -50,8 +58,11 @@ namespace Graphics
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BufferData(BufferTarget.ArrayBuffer, mesh.vertices.Length * sizeof(float), mesh.vertices, BufferUsageHint.StaticDraw);
             // colors vbo
-            GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.DynamicDraw);
+            if (Color != null)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.DynamicDraw);
+            }
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, mesh.indices.Length * sizeof(int), mesh.indices, BufferUsageHint.StaticDraw);
@@ -64,14 +75,17 @@ namespace Graphics
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
             // color attribute
-            GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Double, false, 3 * sizeof(double), 0);
-            GL.EnableVertexAttribArray(1);
+            if (Color != null)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
+                GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Double, false, 3 * sizeof(double), 0);
+                GL.EnableVertexAttribArray(1);
+            }
         }
 
         public void Init()
         {
-            mesh = Owner.GetComponent<Mesh>();
+            mesh = Owner?.GetComponent<Mesh>();
 
             GenBuffers();
             BindBuffers();
@@ -80,15 +94,15 @@ namespace Graphics
             GL.BindVertexArray(0);
         }
 
-        public void Render(Matrix4 view, Matrix4 proj)
+        public void Render(Matrix4 view, Matrix4 proj, PrimitiveType primitiveType)
         {
             shader.Use();
-            var transform = mesh.Owner?.GetComponent<Transform>();
+            var transform = mesh?.Owner?.GetComponent<Transform>();
             shader.SetMat4("model", transform.transform);
             shader.SetMat4("view", view);
             shader.SetMat4("projection", proj);
             GL.BindVertexArray(VAO);
-            GL.DrawElements(PrimitiveType.Triangles, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(primitiveType, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
         }
     }

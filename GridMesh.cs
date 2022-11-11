@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class GridMeshLoader
+    public class GridMesh
     {
-        public static Mesh CreateGridMesh(Grid grid)
+        public static Mesh Create(Grid grid)
         {
             int currCell = 0;
 
