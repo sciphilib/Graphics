@@ -22,6 +22,7 @@ namespace Graphics
         public double MinProperty { get; set; }
 
         private Cell[,,] cells;
+        public GridSlice slice;
 
         public Grid(int sizeX, int sizeY, int sizeZ)
         {
@@ -31,6 +32,7 @@ namespace Graphics
             Capacity = sizeX * sizeY * sizeZ;
             Size = Capacity;
             cells = new Cell[sizeZ, sizeX, sizeY];
+            slice = new(SizeX, SizeY, SizeZ);
         }
         public void PrintGrid()
         {

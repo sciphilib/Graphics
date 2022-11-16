@@ -94,7 +94,7 @@ namespace Graphics
             GL.BindVertexArray(0);
         }
 
-        public void Render(Matrix4 view, Matrix4 proj, PrimitiveType primitiveType)
+        public void Render(Matrix4 view, Matrix4 proj)
         {
             shader.Use();
             var transform = mesh?.Owner?.GetComponent<Transform>();
@@ -102,7 +102,7 @@ namespace Graphics
             shader.SetMat4("view", view);
             shader.SetMat4("projection", proj);
             GL.BindVertexArray(VAO);
-            GL.DrawElements(primitiveType, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(mesh.PrimitiveType, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
         }
     }

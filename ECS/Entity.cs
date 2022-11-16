@@ -21,7 +21,7 @@ namespace Graphics.ECS
             componentManager.AddComponent(component, this);
         }
 
-        public T? GetComponent<T>() where T : Component
+        public T GetComponent<T>() where T : Component
         {
             if (componentManager.HasComponent<T>())
             {

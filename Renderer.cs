@@ -44,6 +44,8 @@ namespace Graphics
         Grid grid;
         GridOutline gridOutline;
         double[] gridColors;
+        int iSlice, jSlice, kSlice;
+        bool iSliceB, jSliceB, kSliceB, isFullGrid;
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.One;
@@ -86,6 +88,7 @@ namespace Graphics
             GridPropertiesLoader.Load(0, grid, gridProperties);
             gridColors = GridProperties.CreateColorArray(grid, palette1, palette2);
 
+
             grid.AddComponent(new Transform());
             grid.AddComponent(GridMesh.Create(grid));
             grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors));
@@ -104,6 +107,7 @@ namespace Graphics
             gridOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
 
             var outlineMesh = gridOutline.componentManager.GetComponent<Mesh>();
+            outlineMesh.PrimitiveType = PrimitiveType.Lines;
             gridOutline.GetComponent<Transform>()?.Translate(-new Vector3(outlineMesh.vertices[0], outlineMesh.vertices[1], outlineMesh.vertices[2]));
             gridOutline.GetComponent<Transform>()?.RotateX(180);
             gridOutline.GetComponent<Transform>()?.Scale(0.0025f);
@@ -112,6 +116,10 @@ namespace Graphics
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
+
+            iSlice = grid.SizeX - 1;
+            jSlice = grid.SizeY - 1;
+            kSlice = grid.SizeZ - 1;
 
             //int[]? surfaceIndices;
             //BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
@@ -323,8 +331,35 @@ namespace Graphics
             //GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
-            grid.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix, PrimitiveType.Triangles);
-            gridOutline.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix, PrimitiveType.Lines);
+            GridSlice newGridSlice;
+
+            if (isFullGrid)
+                newGridSlice = new();
+            else
+                newGridSlice = new(iSlice, jSlice, kSlice);
+         
+            if (grid.slice != newGridSlice)
+            {
+                if (isFullGrid)
+                    GridSlice.MakeZeroSlice(grid, newGridSlice);
+                else
+                    GridSlice.MakeSlice(grid, newGridSlice);
+                
+                var newGridMesh = GridMesh.Create(grid);
+                grid.GetComponent<Mesh>().vertices = newGridMesh.vertices;
+                grid.GetComponent<Mesh>().indices = newGridMesh.indices;
+                //grid.GetComponent<MeshRenderer>().Color = GridProperties.CreateColorArray(grid, palette1, palette2);
+                grid.GetComponent<MeshRenderer>().Init();
+
+                var newOutlineMesh = GridOutlineMesh.Create(grid);
+                gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
+                gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
+                gridOutline.GetComponent<MeshRenderer>().Init();
+                Console.WriteLine("New meshes rendered");
+            }
+
+            grid.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
+            gridOutline.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
 
             //sun's shader settings
             _sunShader?.Use();
@@ -375,6 +410,39 @@ namespace Graphics
             {
                 ImGui.ColorEdit3("Min color", ref palette1, ImGuiColorEditFlags.Float);
                 ImGui.ColorEdit3("Max color", ref palette2, ImGuiColorEditFlags.Float);
+            }
+            if (ImGui.CollapsingHeader("Grid"))
+            {
+                ImGui.Checkbox("Full grid", ref isFullGrid);
+
+                ImGui.Text("Grid slice");
+
+                if (isFullGrid)
+                    ImGui.BeginDisabled(true);
+
+                ImGui.Checkbox("i", ref iSliceB);
+                if (iSliceB)
+                {
+                    ImGui.SameLine();
+                    ImGui.SliderInt("Slice i", ref iSlice, 0, grid.SizeX - 1);
+                }
+
+                ImGui.Checkbox("j", ref jSliceB);
+                if (jSliceB)
+                {
+                    ImGui.SameLine();
+                    ImGui.SliderInt("Slice j", ref jSlice, 0, grid.SizeY - 1);
+                }
+
+                ImGui.Checkbox("k", ref kSliceB);
+                if (kSliceB)
+                {
+                    ImGui.SameLine();
+                    ImGui.SliderInt("Slice k", ref kSlice, 0, grid.SizeZ - 1);
+                }
+
+                if (isFullGrid)
+                    ImGui.EndDisabled();
             };
             Util.CheckGLError("End of frame");
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
