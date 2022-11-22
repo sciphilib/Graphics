@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class GridOutlineMesh
+    public class GridOutlineMeshCreator
     {
         public static Mesh Create(Grid grid)
         {

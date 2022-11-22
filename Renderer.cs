@@ -45,7 +45,7 @@ namespace Graphics
         GridOutline gridOutline;
         double[] gridColors;
         int iSlice, jSlice, kSlice;
-        bool iSliceB, jSliceB, kSliceB, isFullGrid;
+        bool iSliceB = false, jSliceB = false, kSliceB = false, isVisibleGrid = true;
 
         // imgui variables
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.One;
@@ -90,36 +90,29 @@ namespace Graphics
 
 
             grid.AddComponent(new Transform());
-            grid.AddComponent(GridMesh.Create(grid));
+            grid.AddComponent(GridMeshCreator.Create(grid));
             grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors));
-
             var gridMesh = grid.componentManager.GetComponent<Mesh>();
             grid.GetComponent<Transform>()?.Translate(-new Vector3(gridMesh.vertices[0], gridMesh.vertices[1], gridMesh.vertices[2]));
             grid.GetComponent<Transform>()?.RotateX(180);
             grid.GetComponent<Transform>()?.Scale(0.0025f);
 
-            grid.GetComponent<MeshRenderer>()?.Init();
-
-            // grid outline
+            //grid outline
             gridOutline = new();
+            grid.AddChild(gridOutline);
             gridOutline.AddComponent(new Transform());
-            gridOutline.AddComponent(GridOutlineMesh.Create(grid));
+            gridOutline.AddComponent(GridOutlineMeshCreator.Create(grid));
             gridOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
-
             var outlineMesh = gridOutline.componentManager.GetComponent<Mesh>();
             outlineMesh.PrimitiveType = PrimitiveType.Lines;
-            gridOutline.GetComponent<Transform>()?.Translate(-new Vector3(outlineMesh.vertices[0], outlineMesh.vertices[1], outlineMesh.vertices[2]));
-            gridOutline.GetComponent<Transform>()?.RotateX(180);
-            gridOutline.GetComponent<Transform>()?.Scale(0.0025f);
+
+            grid.GetComponent<MeshRenderer>()?.Init();
             gridOutline.GetComponent<MeshRenderer>()?.Init();
 
+            grid.Update();
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
-
-            iSlice = grid.SizeX - 1;
-            jSlice = grid.SizeY - 1;
-            kSlice = grid.SizeZ - 1;
 
             //int[]? surfaceIndices;
             //BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
@@ -273,12 +266,12 @@ namespace Graphics
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            if (lastPalette1 != palette1 || lastPalette2 != palette2)
-            {
-                BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
-            }
+            //if (lastPalette1 != palette1 || lastPalette2 != palette2)
+            //{
+            //    BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
+            //    GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+            //    GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
+            //}
             
 
             _shader?.Use();
@@ -331,35 +324,66 @@ namespace Graphics
             //GL.DrawElements(PrimitiveType.Triangles, 6 * quadCount, DrawElementsType.UnsignedInt, 0);
 
             // grid
-            GridSlice newGridSlice;
+            //GridSliceLoader newGridSlice;
 
-            if (isFullGrid)
-                newGridSlice = new();
-            else
-                newGridSlice = new(iSlice, jSlice, kSlice);
-         
-            if (grid.slice != newGridSlice)
+            //if (isVisibleGrid)
+            //    newGridSlice = new();
+            //else
+            //    newGridSlice = new(iSlice, jSlice, kSlice);
+
+            //if (grid.slice != newGridSlice)
+            //{
+            //    if (isVisibleGrid)
+            //        GridSliceLoader.MakeZeroSlice(grid, newGridSlice);
+            //    else
+            //        GridSliceLoader.MakeSlice(grid, newGridSlice);
+
+            //    var newGridMesh = GridMesh.Create(grid);
+            //    grid.GetComponent<Mesh>().vertices = newGridMesh.vertices;
+            //    grid.GetComponent<Mesh>().indices = newGridMesh.indices;
+            //    grid.GetComponent<MeshRenderer>().Color = GridProperties.CreateColorArray(grid, palette1, palette2);
+            //    grid.GetComponent<MeshRenderer>().Init();
+
+            //    var newOutlineMesh = GridOutlineMesh.Create(grid);
+            //    gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
+            //    gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
+            //    gridOutline.GetComponent<MeshRenderer>().Init();
+            //    Console.WriteLine("New meshes rendered");
+            //}
+
+
+
+            if (isVisibleGrid)
             {
-                if (isFullGrid)
-                    GridSlice.MakeZeroSlice(grid, newGridSlice);
-                else
-                    GridSlice.MakeSlice(grid, newGridSlice);
-                
-                var newGridMesh = GridMesh.Create(grid);
-                grid.GetComponent<Mesh>().vertices = newGridMesh.vertices;
-                grid.GetComponent<Mesh>().indices = newGridMesh.indices;
-                //grid.GetComponent<MeshRenderer>().Color = GridProperties.CreateColorArray(grid, palette1, palette2);
+                grid.SetVisible(true);
+                Mesh mesh = GridMeshCreator.Create(grid);
+                grid.GetComponent<Mesh>().vertices = mesh.vertices;
+                grid.GetComponent<Mesh>().indices = mesh.indices;
                 grid.GetComponent<MeshRenderer>().Init();
-
-                var newOutlineMesh = GridOutlineMesh.Create(grid);
+                var newOutlineMesh = GridOutlineMeshCreator.Create(grid);
                 gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
                 gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
                 gridOutline.GetComponent<MeshRenderer>().Init();
-                Console.WriteLine("New meshes rendered");
+            }
+            else
+            {
+                grid.SetVisible(false);
+                Mesh mesh = GridMeshCreator.Create(grid);
+                grid.GetComponent<Mesh>().vertices = mesh.vertices;
+                grid.GetComponent<Mesh>().indices = mesh.indices;
+                grid.GetComponent<MeshRenderer>().Init();
+                var newOutlineMesh = GridOutlineMeshCreator.Create(grid);
+                gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
+                gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
+                gridOutline.GetComponent<MeshRenderer>().Init();
             }
 
             grid.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
-            gridOutline.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
+            foreach (var child in grid.children)
+            {
+                child.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
+            }
+
 
             //sun's shader settings
             _sunShader?.Use();
@@ -413,11 +437,11 @@ namespace Graphics
             }
             if (ImGui.CollapsingHeader("Grid"))
             {
-                ImGui.Checkbox("Full grid", ref isFullGrid);
+                ImGui.Checkbox("Full grid", ref isVisibleGrid);
 
                 ImGui.Text("Grid slice");
 
-                if (isFullGrid)
+                if (isVisibleGrid)
                     ImGui.BeginDisabled(true);
 
                 ImGui.Checkbox("i", ref iSliceB);
@@ -441,7 +465,7 @@ namespace Graphics
                     ImGui.SliderInt("Slice k", ref kSlice, 0, grid.SizeZ - 1);
                 }
 
-                if (isFullGrid)
+                if (isVisibleGrid)
                     ImGui.EndDisabled();
             };
             Util.CheckGLError("End of frame");

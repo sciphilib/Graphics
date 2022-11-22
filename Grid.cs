@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Graphics
 {
@@ -22,7 +23,6 @@ namespace Graphics
         public double MinProperty { get; set; }
 
         private Cell[,,] cells;
-        public GridSlice slice;
 
         public Grid(int sizeX, int sizeY, int sizeZ)
         {
@@ -32,7 +32,6 @@ namespace Graphics
             Capacity = sizeX * sizeY * sizeZ;
             Size = Capacity;
             cells = new Cell[sizeZ, sizeX, sizeY];
-            slice = new(SizeX, SizeY, SizeZ);
         }
         public void PrintGrid()
         {
@@ -57,6 +56,24 @@ namespace Graphics
         public ref Cell GetCell(int i, int j, int k)
         {
             return ref cells[k, i, j];
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (visible)
+            {
+                foreach (var cell in cells)
+                {
+                    cell.isActive = true;
+                }
+            }
+            else
+            {
+                foreach (var cell in cells)
+                {
+                    cell.isActive = false;
+                }
+            }
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Graphics
             if (Color != null)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.StaticDraw);
             }
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);

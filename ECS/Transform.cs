@@ -16,7 +16,7 @@ namespace Graphics.ECS
 
         public Transform()
         {
-            position = Vector3.One;
+            position = Vector3.Zero;
             transform = Matrix4.Identity;
             TransformSystem.Register(this);
         }
@@ -28,6 +28,7 @@ namespace Graphics.ECS
 
         public void Translate(Vector3 translation)
         {
+            position += translation;
             transform *= Matrix4.CreateTranslation(translation);
         }
 
@@ -39,6 +40,16 @@ namespace Graphics.ECS
         public void RotateX(float angle)
         {
             transform *= Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle));
+        }
+
+        public void RotateY(float angle)
+        {
+            transform *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle));
+        }
+
+        public void RotateZ(float angle)
+        {
+            transform *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle));
         }
     }
 }

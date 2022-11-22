@@ -28,22 +28,70 @@ namespace Graphics
             double[] array = new double[verticesPerCell * colorValuePerVert * grid.Size];
 
             int index = 0;
+
+
             for (int k = 0; k < grid.SizeZ; k++)
             {
-                for (int j = 0; j < grid.SizeX; j++)
+                for (int i = 0; i < grid.SizeX; i++)
                 {
-                    for (int i = 0; i < grid.SizeY; i++)
+                    for (int j = 0; j < grid.SizeY; j++)
                     {
                         for (int vertex = 0; vertex < 8; vertex++)
                         {
 
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
-                            array[index++] = Map(grid.GetCell(j, i, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
+                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
+                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
+                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
                         }
                     }
                 }
             }
+
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    for (int k = 0; k < grid.SizeZ; k++)
+            //    {
+            //        for (int j = 0; j < grid.SizeY; j++)
+            //        {
+            //            for (int vertex = 0; vertex < 8; vertex++)
+            //            {
+            //                array[index++] = Map(grid.GetCell(grid.slice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
+            //                array[index++] = Map(grid.GetCell(grid.slice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
+            //                array[index++] = Map(grid.GetCell(grid.slice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
+            //            }
+            //        }
+            //    }
+            //}
+            //for (int j = 0; j < 1; j++)
+            //{
+            //    for (int k = 0; k < grid.SizeZ; k++)
+            //    {
+            //        for (int i = 0; i < grid.SizeX; i++)
+            //        {
+            //            for (int vertex = 0; vertex < 8; vertex++)
+            //            {
+            //                array[index++] = Map(grid.GetCell(i, grid.slice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
+            //                array[index++] = Map(grid.GetCell(i, grid.slice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
+            //                array[index++] = Map(grid.GetCell(i, grid.slice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
+            //            }
+            //        }
+            //    }
+            //}
+            //for (int k = 0; k < 1; k++)
+            //{
+            //    for (int i = 0; i < grid.SizeX; i++)
+            //    {
+            //        for (int j = 0; j < grid.SizeY; j++)
+            //        {
+            //            for (int vertex = 0; vertex < 8; vertex++)
+            //            {
+            //                array[index++] = Map(grid.GetCell(i, j, grid.slice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X);
+            //                array[index++] = Map(grid.GetCell(i, j, grid.slice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y);
+            //                array[index++] = Map(grid.GetCell(i, j, grid.slice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z);
+            //            }
+            //        }
+            //    }
+            //}
             return array;
         }
 
