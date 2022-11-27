@@ -42,7 +42,9 @@ namespace Graphics
         private float[]? surfaceVertices;
 
         Grid grid;
-        GridOutline gridOutline;
+        Outline gridOutline;
+        GridSlice gridSlice;
+
         double[] gridColors;
         int iSlice, jSlice, kSlice;
         bool iSliceB = false, jSliceB = false, kSliceB = false, isVisibleGrid = true;
@@ -86,8 +88,7 @@ namespace Graphics
             grid = GridParser.Parse("data\\grid.bin");
             GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
             GridPropertiesLoader.Load(0, grid, gridProperties);
-            gridColors = GridProperties.CreateColorArray(grid, palette1, palette2);
-
+            gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2);
 
             grid.AddComponent(new Transform());
             grid.AddComponent(GridMeshCreator.Create(grid));
@@ -101,15 +102,33 @@ namespace Graphics
             gridOutline = new();
             grid.AddChild(gridOutline);
             gridOutline.AddComponent(new Transform());
-            gridOutline.AddComponent(GridOutlineMeshCreator.Create(grid));
+            gridOutline.AddComponent(new OutlineMeshCreator().CreateGridOutline(grid));
             gridOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
-            var outlineMesh = gridOutline.componentManager.GetComponent<Mesh>();
-            outlineMesh.PrimitiveType = PrimitiveType.Lines;
+            gridOutline.componentManager.GetComponent<Mesh>().PrimitiveType = PrimitiveType.Lines;
+
+            //grid slice
+            gridSlice = new(grid, 4, 3, 5);
+            var gridSliceColor = ColorArrayCreator.CreateGridSliceColorArray(grid, gridSlice, palette1, palette2);
+            grid.AddChild(gridSlice);
+            gridSlice.AddComponent(new Transform());
+            gridSlice.AddComponent(new GridSliceMeshCreator(grid, gridSlice).Create());
+            gridSlice.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridSliceColor));
+            
+            //grid slice outline
+            var gridSliceOutline = new Outline();
+            gridSlice.AddChild(gridSliceOutline);
+            gridSliceOutline.AddComponent(new Transform());
+            gridSliceOutline.AddComponent(new OutlineMeshCreator().CreateGridSliceOutline(gridSlice));
+            gridSliceOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
+            gridSliceOutline.componentManager.GetComponent<Mesh>().PrimitiveType = PrimitiveType.Lines;
 
             grid.GetComponent<MeshRenderer>()?.Init();
             gridOutline.GetComponent<MeshRenderer>()?.Init();
+            gridSlice.GetComponent<MeshRenderer>()?.Init();
+            gridSliceOutline.GetComponent<MeshRenderer>()?.Init();
 
             grid.Update();
+            gridSlice.Update();
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
@@ -338,13 +357,13 @@ namespace Graphics
             //    else
             //        GridSliceLoader.MakeSlice(grid, newGridSlice);
 
-            //    var newGridMesh = GridMesh.Create(grid);
+            //    var newGridMesh = GridMesh.CreateGridOutline(grid);
             //    grid.GetComponent<Mesh>().vertices = newGridMesh.vertices;
             //    grid.GetComponent<Mesh>().indices = newGridMesh.indices;
-            //    grid.GetComponent<MeshRenderer>().Color = GridProperties.CreateColorArray(grid, palette1, palette2);
+            //    grid.GetComponent<MeshRenderer>().Color = GridProperties.CreateGridColorArray(grid, palette1, palette2);
             //    grid.GetComponent<MeshRenderer>().Init();
 
-            //    var newOutlineMesh = GridOutlineMesh.Create(grid);
+            //    var newOutlineMesh = GridOutlineMesh.CreateGridOutline(grid);
             //    gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
             //    gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
             //    gridOutline.GetComponent<MeshRenderer>().Init();
@@ -360,7 +379,7 @@ namespace Graphics
                 grid.GetComponent<Mesh>().vertices = mesh.vertices;
                 grid.GetComponent<Mesh>().indices = mesh.indices;
                 grid.GetComponent<MeshRenderer>().Init();
-                var newOutlineMesh = GridOutlineMeshCreator.Create(grid);
+                var newOutlineMesh = new OutlineMeshCreator().CreateGridOutline(grid);
                 gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
                 gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
                 gridOutline.GetComponent<MeshRenderer>().Init();
@@ -372,7 +391,7 @@ namespace Graphics
                 grid.GetComponent<Mesh>().vertices = mesh.vertices;
                 grid.GetComponent<Mesh>().indices = mesh.indices;
                 grid.GetComponent<MeshRenderer>().Init();
-                var newOutlineMesh = GridOutlineMeshCreator.Create(grid);
+                var newOutlineMesh = new OutlineMeshCreator().CreateGridOutline(grid);
                 gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
                 gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
                 gridOutline.GetComponent<MeshRenderer>().Init();

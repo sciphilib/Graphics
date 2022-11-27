@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class GridOutline : Entity
+    public class Outline : Entity
     {
         
     }
