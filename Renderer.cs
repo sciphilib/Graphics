@@ -44,6 +44,7 @@ namespace Graphics
         Grid grid;
         Outline gridOutline;
         GridSlice gridSlice;
+        Outline gridSliceOutline;
 
         double[] gridColors;
         int iSlice, jSlice, kSlice;
@@ -107,7 +108,7 @@ namespace Graphics
             gridOutline.componentManager.GetComponent<Mesh>().PrimitiveType = PrimitiveType.Lines;
 
             //grid slice
-            gridSlice = new(grid, 4, 3, 5);
+            gridSlice = new(grid, 0, 10, 4);
             var gridSliceColor = ColorArrayCreator.CreateGridSliceColorArray(grid, gridSlice, palette1, palette2);
             grid.AddChild(gridSlice);
             gridSlice.AddComponent(new Transform());
@@ -115,7 +116,7 @@ namespace Graphics
             gridSlice.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridSliceColor));
             
             //grid slice outline
-            var gridSliceOutline = new Outline();
+            gridSliceOutline = new Outline();
             gridSlice.AddChild(gridSliceOutline);
             gridSliceOutline.AddComponent(new Transform());
             gridSliceOutline.AddComponent(new OutlineMeshCreator().CreateGridSliceOutline(gridSlice));
@@ -128,7 +129,6 @@ namespace Graphics
             gridSliceOutline.GetComponent<MeshRenderer>()?.Init();
 
             grid.Update();
-            gridSlice.Update();
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
@@ -397,10 +397,16 @@ namespace Graphics
                 gridOutline.GetComponent<MeshRenderer>().Init();
             }
 
+
+
             grid.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
-            foreach (var child in grid.children)
+            foreach (var gridChild in grid.children)
             {
-                child.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
+                foreach (var child in gridChild.children)
+                {
+                    child.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
+                }
+                gridChild.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
             }
 
 

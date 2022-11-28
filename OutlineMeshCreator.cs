@@ -35,35 +35,42 @@ namespace Graphics
             vertices = gridSlice.GetComponent<Mesh>()?.vertices;
             indices = new int[gridSlice.Size * indicesPerCell];
 
-            for (int i = 0; i < 1; i++)
+            if (gridSlice.ISlice != 0)
             {
-                for (int k = 0; k < gridSlice.SizeZ; k++)
+                for (int i = 0; i < 1; i++)
                 {
-                    for (int j = 0; j < gridSlice.SizeY; j++)
+                    for (int k = 0; k < gridSlice.SizeZ; k++)
                     {
-                        AddIndices();
+                        for (int j = 0; j < gridSlice.SizeY; j++)
+                        {
+                            AddIndices();
+                        }
                     }
                 }
             }
-
-            for (int j = 0; j < 1; j++)
+            if (gridSlice.JSlice != 0)
             {
-                for (int k = 0; k < gridSlice.SizeZ; k++)
+                for (int j = 0; j < 1; j++)
+                {
+                    for (int k = 0; k < gridSlice.SizeZ; k++)
+                    {
+                        for (int i = 0; i < gridSlice.SizeX; i++)
+                        {
+                            AddIndices();
+                        }
+                    }
+                }
+            }
+            if (gridSlice.KSlice != 0)
+            { 
+                for (int k = 0; k < 1; k++)
                 {
                     for (int i = 0; i < gridSlice.SizeX; i++)
                     {
-                        AddIndices();
-                    }
-                }
-            }
-
-            for (int k = 0; k < 1; k++)
-            {
-                for (int i = 0; i < gridSlice.SizeX; i++)
-                {
-                    for (int j = 0; j < gridSlice.SizeY; j++)
-                    {
-                        AddIndices();
+                        for (int j = 0; j < gridSlice.SizeY; j++)
+                        {
+                            AddIndices();
+                        }
                     }
                 }
             }

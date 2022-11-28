@@ -16,9 +16,9 @@ namespace Graphics
             this.grid = grid;
             this.gridSlice = gridSlice;
 
-            if (gridSlice.ISlice > 0 && gridSlice.ISlice <= grid.SizeX
-                && gridSlice.JSlice > 0 && gridSlice.JSlice <= grid.SizeY
-                && gridSlice.KSlice > 0 && gridSlice.KSlice <= grid.SizeZ)
+            if (gridSlice.ISlice >= 0 && gridSlice.ISlice <= grid.SizeX
+                && gridSlice.JSlice >= 0 && gridSlice.JSlice <= grid.SizeY
+                && gridSlice.KSlice >= 0 && gridSlice.KSlice <= grid.SizeZ)
             {
                 vertices = new float[gridSlice.Size * verticesPerCell];
                 indices = new int[gridSlice.Size * indicesPerCell];
@@ -33,9 +33,18 @@ namespace Graphics
 
         public Mesh Create()
         {
-            MakeSliceI();
-            MakeSliceJ();
-            MakeSliceK();
+            if (gridSlice.ISlice != 0)
+            {
+                MakeSliceI();
+            }
+            if (gridSlice.JSlice != 0)
+            {
+                MakeSliceJ();
+            }
+            if (gridSlice.KSlice != 0)
+            {
+                MakeSliceK();
+            }
             return new Mesh(vertices, indices);
         }
 
@@ -98,7 +107,7 @@ namespace Graphics
                     {
                         if (grid.GetCell(gridSlice.ISlice, j, k).isActive)
                         {
-                            AddVertices(i, j, k);
+                            AddVertices(gridSlice.ISlice, j, k);
                             AddIndices();
                         }
                     }
@@ -116,7 +125,7 @@ namespace Graphics
                     {
                         if (grid.GetCell(i, gridSlice.JSlice, k).isActive)
                         {
-                            AddVertices(i, j, k);
+                            AddVertices(i, gridSlice.JSlice, k);
                             AddIndices();
                         }
                     }
@@ -134,7 +143,7 @@ namespace Graphics
                     {
                         if (grid.GetCell(i, j, gridSlice.KSlice).isActive)
                         {
-                            AddVertices(i, j, k);
+                            AddVertices(i, j, gridSlice.KSlice);
                             AddIndices();
                         }
                     }
