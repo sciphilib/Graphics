@@ -55,9 +55,13 @@ namespace Graphics
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
         private System.Numerics.Vector3 palette1 = new(0.211f, 0.884f, 1.000f);
-        private System.Numerics.Vector3 palette2 = new(0.326f, 0.024f, 0.024f);
+        private System.Numerics.Vector3 palette2 = new(0.319f, 1.000f, 0.319f);
+        private System.Numerics.Vector3 palette3 = new(0.755f, 0.394f, 0.033f);
+        private System.Numerics.Vector3 palette4 = new(1.000f, 0.000f, 0.000f);
         private System.Numerics.Vector3 lastPalette1;
         private System.Numerics.Vector3 lastPalette2;
+        private System.Numerics.Vector3 lastPalette3;
+        private System.Numerics.Vector3 lastPalette4;
         static int currentItem = 0;
 
 
@@ -89,7 +93,7 @@ namespace Graphics
             grid = GridParser.Parse("data\\grid.bin");
             GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
             GridPropertiesLoader.Load(0, grid, gridProperties);
-            gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2);
+            gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2, palette3, palette4);
 
             grid.AddComponent(new Transform());
             grid.AddComponent(GridMeshCreator.Create(grid));
@@ -109,7 +113,7 @@ namespace Graphics
 
             //grid slice
             gridSlice = new(grid, 0, 10, 4);
-            var gridSliceColor = ColorArrayCreator.CreateGridSliceColorArray(grid, gridSlice, palette1, palette2);
+            var gridSliceColor = ColorArrayCreator.CreateGridSliceColorArray(grid, gridSlice, palette1, palette2, palette3, palette4);
             grid.AddChild(gridSlice);
             gridSlice.AddComponent(new Transform());
             gridSlice.AddComponent(new GridSliceMeshCreator(grid, gridSlice).Create());
@@ -132,6 +136,8 @@ namespace Graphics
 
             lastPalette1 = palette1;
             lastPalette2 = palette2;
+            lastPalette3 = palette3;
+            lastPalette4 = palette4;
 
             //int[]? surfaceIndices;
             //BufferGenerator.GenerateEBOelements(2, out surfaceIndices);
@@ -285,13 +291,17 @@ namespace Graphics
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            //if (lastPalette1 != palette1 || lastPalette2 != palette2)
-            //{
-            //    BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
-            //    GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
-            //    GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
-            //}
-            
+            if (lastPalette1 != palette1 || lastPalette2 != palette2 || lastPalette3 != palette3 || lastPalette4 != palette4)
+            {
+                //BufferGenerator.GenerateColor(surfaceVertices, quadCount, palette1, palette2, minSurfaceHeight, maxSurfaceHeight, out surfaceColorArray);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, surfaceColorsVBO);
+                //GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)0, surfaceColorArray.Length * sizeof(float), surfaceColorArray);
+                gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2, palette3, palette4);
+                grid.GetComponent<MeshRenderer>().Color = gridColors;
+                //grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", /*gridColors*/));
+                grid.GetComponent<MeshRenderer>()?.Init();
+            }
+
 
             _shader?.Use();
             _shader?.SetVec3("dirLight.direction", -_sunPosition.X, -_sunPosition.Y, -_sunPosition.Z);
@@ -429,6 +439,8 @@ namespace Graphics
             }
             lastPalette1 = palette1;
             lastPalette2 = palette2;
+            lastPalette3 = palette3;
+            lastPalette4 = palette4;
         }
 
         private void OnImGuiDraw()
@@ -457,8 +469,11 @@ namespace Graphics
             };
             if (ImGui.CollapsingHeader("Surface colors"))
             {
-                ImGui.ColorEdit3("Min color", ref palette1, ImGuiColorEditFlags.Float);
-                ImGui.ColorEdit3("Max color", ref palette2, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("1 color", ref palette1, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("2 color", ref palette2, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("3 color", ref palette3, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("4 color", ref palette4, ImGuiColorEditFlags.Float);
+
             }
             if (ImGui.CollapsingHeader("Grid"))
             {
