@@ -12,10 +12,8 @@ namespace Graphics
     {
         public float[] vertices;
         public int[] indices;
-        public PrimitiveType PrimitiveType { get; set; }
         public Mesh(float[] vertices, int[] indices)
         {
-            PrimitiveType = PrimitiveType.Triangles;
             this.vertices = vertices;
             this.indices = indices;
         }

@@ -18,7 +18,6 @@ namespace Graphics.ECS
         {
             position = Vector3.Zero;
             transform = Matrix4.Identity;
-            TransformSystem.Register(this);
         }
         public Transform(Vector3 position, Matrix4 transform)
         {

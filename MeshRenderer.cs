@@ -14,39 +14,12 @@ namespace Graphics
 {
     public class MeshRenderer : Component
     {
-        public string VertexShaderPath { get; set; }
-        public string FragmentShaderPath { get; set; }
-        public double[]? Color { get; set; }
-
-        public Mesh? mesh;
         public int VAO, VBO, colorVBO, EBO;
-        public Shader shader;
-
-        public MeshRenderer(string vertexShaderPath, string fragmentShaderPath, double[] color)
-        {
-            VertexShaderPath = vertexShaderPath;
-            FragmentShaderPath = fragmentShaderPath;
-            Color = color;
-            shader = new(VertexShaderPath, FragmentShaderPath);
-        }
-
-        public MeshRenderer(string vertexShaderPath, string fragmentShaderPath)
-        {
-            VertexShaderPath = vertexShaderPath;
-            FragmentShaderPath = fragmentShaderPath;
-            shader = new(VertexShaderPath, FragmentShaderPath);
-        }
-
-        ~MeshRenderer()
-        {
-            shader.Dispose();
-        }
-        
         public void GenBuffers()
         {
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
-            if (Color != null)
+            if (Owner?.GetComponent<RenderProps>()._color != null)
                 colorVBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
         }
@@ -56,16 +29,16 @@ namespace Graphics
             // vertices vbo
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, mesh.vertices.Length * sizeof(float), mesh.vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, Owner.GetComponent<Mesh>().vertices.Length * sizeof(float), Owner.GetComponent<Mesh>().vertices, BufferUsageHint.StaticDraw);
             // colors vbo
-            if (Color != null)
+            if (Owner?.GetComponent<RenderProps>()._color != null)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, Color.Length * sizeof(double), Color, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, Owner.GetComponent<RenderProps>()._color.Length * sizeof(double), Owner.GetComponent<RenderProps>()._color, BufferUsageHint.StaticDraw);
             }
             // ebo
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, mesh.indices.Length * sizeof(int), mesh.indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, Owner.GetComponent<Mesh>().indices.Length * sizeof(int), Owner.GetComponent<Mesh>().indices, BufferUsageHint.StaticDraw);
         }
 
         public void SetAttribArray()
@@ -75,7 +48,7 @@ namespace Graphics
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
             // color attribute
-            if (Color != null)
+            if (Owner?.GetComponent<RenderProps>()._color != null)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, colorVBO);
                 GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Double, false, 3 * sizeof(double), 0);
@@ -85,8 +58,6 @@ namespace Graphics
 
         public void Init()
         {
-            mesh = Owner?.GetComponent<Mesh>();
-
             GenBuffers();
             BindBuffers();
             SetAttribArray();
@@ -96,13 +67,12 @@ namespace Graphics
 
         public void Render(Matrix4 view, Matrix4 proj)
         {
-            shader.Use();
-            var transform = mesh?.Owner?.GetComponent<Transform>();
-            shader.SetMat4("model", transform.transform);
-            shader.SetMat4("view", view);
-            shader.SetMat4("projection", proj);
+            Owner?.GetComponent<RenderProps>()._shader.Use();
+            Owner?.GetComponent<RenderProps>()._shader.SetMat4("model", Owner.GetComponent<Transform>().transform);
+            Owner?.GetComponent<RenderProps>()._shader.SetMat4("view", view);
+            Owner?.GetComponent<RenderProps>()._shader.SetMat4("projection", proj);
             GL.BindVertexArray(VAO);
-            GL.DrawElements(mesh.PrimitiveType, mesh.indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(Owner.GetComponent<Mesh>().PrimitiveType, Owner.GetComponent<Mesh>().indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
         }
     }

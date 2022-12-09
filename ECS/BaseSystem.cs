@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,12 @@ namespace Graphics.ECS
 {
     public abstract class BaseSystem<T> where T : Component
     {
-        protected static List<T> components = new List<T>();
+        private static List<T> components = new();
 
-        public static void Register(T component)
+        static public void Register(T component)
         {
             components.Add(component);
         }
+
     }
 }

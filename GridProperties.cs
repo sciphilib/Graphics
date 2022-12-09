@@ -7,10 +7,11 @@ using System.Text;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Reflection;
+using Graphics.ECS;
 
 namespace Graphics
 {
-    public class GridProperties
+    public class GridProperties : Component
     {
         public int propertiesCount;
         public double[,] properties;
@@ -20,8 +21,5 @@ namespace Graphics
             this.propertiesCount = propertiesCount;
             this.properties = properties;
         }
-
-       
-
     }
 }

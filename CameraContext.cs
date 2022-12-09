@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 
-namespace Graphics.ECS
+namespace Graphics
 {
-    public class TransformSystem : BaseSystem<Transform>
+    public class CameraContext
     {
+        public Camera camera;
     }
 }
