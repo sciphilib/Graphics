@@ -9,7 +9,7 @@ namespace Graphics
     public class OutlineMeshCreator
     {
 
-        public Mesh CreateGridOutline(Grid grid)
+        public Mesh CreateGridOutlineMesh(Grid grid)
         {
             vertices = grid.GetComponent<Mesh>()?.vertices;
             indices = new int[grid.Capacity * indicesPerCell];
@@ -30,7 +30,7 @@ namespace Graphics
             return new Mesh(vertices, indices);
         }
 
-        public  Mesh CreateGridSliceOutline(GridSlice gridSlice)
+        public  Mesh CreateGridSliceOutlineMesh(GridSlice gridSlice)
         {
             vertices = gridSlice.GetComponent<Mesh>()?.vertices;
             indices = new int[gridSlice.Size * indicesPerCell];

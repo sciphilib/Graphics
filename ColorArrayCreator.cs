@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Platform.Windows;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,13 +11,12 @@ namespace Graphics
 {
     public class ColorArrayCreator
     {
-        static public double[] CreateGridColorArray(Grid grid, Vector3 palette1, Vector3 palette2, Vector3 palette3, Vector3 palette4)
+        static public double[] CreateGridColorArray(Grid grid, params Vector3[] palette)
         {
             int verticesPerCell = 8;
             int colorValuePerVert = 3;
             double[] array = new double[verticesPerCell * colorValuePerVert * grid.Size];
             int index = 0;
-
 
             for (int k = 0; k < grid.SizeZ; k++)
             {
@@ -26,10 +26,10 @@ namespace Graphics
                     {
                         for (int vertex = 0; vertex < 8; vertex++)
                         {
-
-                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X, (double)palette3.X, (double)palette4.X);
-                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y, (double)palette3.Y, (double)palette4.Y);
-                            array[index++] = Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z, (double)palette3.Z, (double)palette4.Z);
+                            Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, out double[] mapValues, palette);
+                            array[index++] = mapValues[0];
+                            array[index++] = mapValues[1];
+                            array[index++] = mapValues[2];
                         }
                     }
                 }
@@ -37,7 +37,7 @@ namespace Graphics
             return array;
         }
 
-        static public double[] CreateGridSliceColorArray(Grid grid, GridSlice gridSlice, Vector3 palette1, Vector3 palette2, Vector3 palette3, Vector3 palette4)
+        static public double[] CreateGridSliceColorArray(Grid grid, GridSlice gridSlice, params Vector3[] palette)
         {
             int verticesPerCell = 8;
             int colorValuePerVert = 3;
@@ -54,9 +54,10 @@ namespace Graphics
                         {
                             for (int vertex = 0; vertex < 8; vertex++)
                             {
-                                array[index++] = Map(grid.GetCell(gridSlice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X, (double)palette3.X, (double)palette4.X);
-                                array[index++] = Map(grid.GetCell(gridSlice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y, (double)palette3.Y, (double)palette4.Y);
-                                array[index++] = Map(grid.GetCell(gridSlice.ISlice, j, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z, (double)palette3.Z, (double)palette4.Z);
+                                Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, out double[] mapValues, palette);
+                                array[index++] = mapValues[0];
+                                array[index++] = mapValues[1];
+                                array[index++] = mapValues[2];
                             }
                         }
                     }
@@ -72,9 +73,10 @@ namespace Graphics
                         {
                             for (int vertex = 0; vertex < 8; vertex++)
                             {
-                                array[index++] = Map(grid.GetCell(i, gridSlice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X, (double)palette3.X, (double)palette4.X);
-                                array[index++] = Map(grid.GetCell(i, gridSlice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y, (double)palette3.Y, (double)palette4.Y);
-                                array[index++] = Map(grid.GetCell(i, gridSlice.JSlice, k).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z, (double)palette3.Z, (double)palette4.Z);
+                                Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, out double[] mapValues, palette);
+                                array[index++] = mapValues[0];
+                                array[index++] = mapValues[1];
+                                array[index++] = mapValues[2];
                             }
                         }
                     }
@@ -90,9 +92,10 @@ namespace Graphics
                         {
                             for (int vertex = 0; vertex < 8; vertex++)
                             {
-                                array[index++] = Map(grid.GetCell(i, j, gridSlice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.X, (double)palette2.X, (double)palette3.X, (double)palette4.X);
-                                array[index++] = Map(grid.GetCell(i, j, gridSlice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Y, (double)palette2.Y, (double)palette3.Y, (double)palette4.Y);
-                                array[index++] = Map(grid.GetCell(i, j, gridSlice.KSlice).property, grid.MinProperty, grid.MaxProperty, (double)palette1.Z, (double)palette2.Z, (double)palette3.Z, (double)palette4.Z);
+                                Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, out double[] mapValues, palette);
+                                array[index++] = mapValues[0];
+                                array[index++] = mapValues[1];
+                                array[index++] = mapValues[2];
                             }
                         }
                     }
@@ -101,26 +104,33 @@ namespace Graphics
             return array;
         }
 
-        public static double Map(double value, double minProp, double maxProp, double color1, double color2, double color3, double color4)
+        public static void Map(double value, double minProp, double maxProp, out double[] mapValues, params Vector3[] palette)
         {
-            if (value <= maxProp / 3)
-            {
-                return Lerp(value, minProp, (maxProp / 3), color1, color2);
-            }
-            else if (maxProp / 3 < value && value < 2 * (maxProp /3))
-            {
-                return Lerp(value, (maxProp / 3), 2 * (maxProp / 3), color2, color3);
-            }
-            else
-            {
-                return Lerp(value, 2 * (maxProp / 3), maxProp, color3, color4);
-            }
+            int counter = 0;
+            int layers = palette.Length - 1;
+            double diff = (maxProp - minProp) / layers;
+            double layerMinProp = minProp;
+            double layerMaxProp = minProp + diff;
 
+            mapValues = new double[3];
+
+            while (value > layerMaxProp)
+            {
+                counter++;
+                layerMinProp = layerMaxProp;
+                layerMaxProp += diff;
+            }
+            mapValues[0] = Lerp(value, layerMinProp, layerMaxProp, palette[counter].X, palette[counter + 1].X);
+            mapValues[1] = Lerp(value, layerMinProp, layerMaxProp, palette[counter].Y, palette[counter + 1].Y);
+            mapValues[2] = Lerp(value, layerMinProp, layerMaxProp, palette[counter].Z, palette[counter + 1].Z);
         }
 
         public static double Lerp(double value, double min1, double max1, double min2, double max2)
         {
-            return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+            if (max1 == min1)
+                return min2 + (value - min1) * (max2 - min2) / 1;
+            else
+                return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Graphics.ECS
 {
     public abstract class BaseSystem<T> where T : Component
     {
-        private static List<T> components = new();
+        public static List<T> components = new();
 
         static public void Register(T component)
         {

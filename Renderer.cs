@@ -23,11 +23,9 @@ namespace Graphics
 
         // scene variables
         Grid grid;
-        Outline gridOutline;
+        Grid grid2;
         GridSlice gridSlice;
-        Outline gridSliceOutline;
 
-        double[] gridColors;
         int iSlice, jSlice, kSlice;
         bool iSliceB = false, jSliceB = false, kSliceB = false, isVisibleGrid = true;
 
@@ -35,14 +33,16 @@ namespace Graphics
         private System.Numerics.Vector3 _objectPos = System.Numerics.Vector3.One;
         private System.Numerics.Vector3 _objectRot = System.Numerics.Vector3.Zero;
         private System.Numerics.Vector3 _sunPosition = new(0.0f, 0.0f, 3.0f);
-        private System.Numerics.Vector3 palette1 = new(0.211f, 0.884f, 1.000f);
-        private System.Numerics.Vector3 palette2 = new(0.319f, 1.000f, 0.319f);
-        private System.Numerics.Vector3 palette3 = new(0.755f, 0.394f, 0.033f);
-        private System.Numerics.Vector3 palette4 = new(1.000f, 0.000f, 0.000f);
-        private System.Numerics.Vector3 lastPalette1;
-        private System.Numerics.Vector3 lastPalette2;
-        private System.Numerics.Vector3 lastPalette3;
-        private System.Numerics.Vector3 lastPalette4;
+        private System.Numerics.Vector3[] palette;
+        private System.Numerics.Vector3[] palette2;
+        private System.Numerics.Vector3 paletteColor1 = new(0.211f, 0.884f, 1.000f);
+        private System.Numerics.Vector3 paletteColor2 = new(0.319f, 1.000f, 0.319f);
+        private System.Numerics.Vector3 paletteColor3 = new(0.755f, 0.394f, 0.033f);
+        private System.Numerics.Vector3 paletteColor4 = new(1.000f, 0.000f, 0.000f);
+        private System.Numerics.Vector3 lastPaletteColor1;
+        private System.Numerics.Vector3 lastPaletteColor2;
+        private System.Numerics.Vector3 lastPaletteColor3;
+        private System.Numerics.Vector3 lastPaletteColor4;
         static int currentItem = 0;
 
 
@@ -61,61 +61,46 @@ namespace Graphics
         private void OnLoad()
         {
             _camera = new(new Vector3(-3.0f, 1.0f, 5.0f), new Vector3(0.0f, 0.0f, 0.0f), (float)_window.Size.X / _window.Size.Y);
-
-
-            var grid = new GridBuilder().BuildGrid("data\\grid.bin", "data\\grid.binprops.txt",
-                "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl",
-                ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2, palette3, palette4));
-
-            ////grid
-            //grid = GridParser.Parse("data\\grid.bin");
-            //GridProperties gridProperties = GridPropertiesParser.Parse(grid, "data\\grid.binprops.txt");
-            //GridPropertiesLoader.Load(0, grid, gridProperties);
-            //gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2, palette3, palette4);
-
-            //grid.AddComponent(new Transform());
-            //grid.AddComponent(GridMeshCreator.Create(grid));
-            //grid.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridColors));
-            //var gridMesh = grid.componentManager.GetComponent<Mesh>();
-            //grid.GetComponent<Transform>()?.Translate(-new Vector3(gridMesh.vertices[0], gridMesh.vertices[1], gridMesh.vertices[2]));
-            //grid.GetComponent<Transform>()?.RotateX(180);
-            //grid.GetComponent<Transform>()?.Scale(0.0025f);
-
-            ////grid outline
-            //gridOutline = new();
-            //grid.AddChild(gridOutline);
-            //gridOutline.AddComponent(new Transform());
-            //gridOutline.AddComponent(new OutlineMeshCreator().CreateGridOutline(grid));
-            //gridOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
-            //gridOutline.componentManager.GetComponent<Mesh>().PrimitiveType = PrimitiveType.Lines;
-
-            ////grid slice
-            //gridSlice = new(grid, 0, 10, 4);
-            //var gridSliceColor = ColorArrayCreator.CreateGridSliceColorArray(grid, gridSlice, palette1, palette2, palette3, palette4);
-            //grid.AddChild(gridSlice);
-            //gridSlice.AddComponent(new Transform());
-            //gridSlice.AddComponent(new GridSliceMeshCreator(grid, gridSlice).Create());
-            //gridSlice.AddComponent(new MeshRenderer("Shaders\\VertexSurfaceShader.glsl", "Shaders\\FragmentSurfaceShader.glsl", gridSliceColor));
             
-            ////grid slice outline
-            //gridSliceOutline = new Outline();
-            //gridSlice.AddChild(gridSliceOutline);
-            //gridSliceOutline.AddComponent(new Transform());
-            //gridSliceOutline.AddComponent(new OutlineMeshCreator().CreateGridSliceOutline(gridSlice));
-            //gridSliceOutline.AddComponent(new MeshRenderer("Shaders\\VertexOutlineShader.glsl", "Shaders\\FragmentOutlineShader.glsl"));
-            //gridSliceOutline.componentManager.GetComponent<Mesh>().PrimitiveType = PrimitiveType.Lines;
+            palette = new System.Numerics.Vector3[2];
+            palette[0] = paletteColor1;
+            palette[1] = paletteColor4;
+            palette2 = new System.Numerics.Vector3[4];
+            palette2[0] = paletteColor1;
+            palette2[1] = paletteColor2;
+            palette2[2] = paletteColor3;
+            palette2[3] = paletteColor4;
 
-            //grid.GetComponent<MeshRenderer>()?.Init();
-            //gridOutline.GetComponent<MeshRenderer>()?.Init();
-            //gridSlice.GetComponent<MeshRenderer>()?.Init();
-            //gridSliceOutline.GetComponent<MeshRenderer>()?.Init();
+            var gridBuilder = new GridBuilder("data\\grid.bin", "data\\grid.binprops.txt",
+                "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
+            var outlineBuilder = new OutlineBuilder("Shaders\\FragmentOutlineShader.glsl", "Shaders\\VertexOutlineShader.glsl");
+            var gridSliceBuilder = new GridSliceBuilder("Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
 
-            //grid.Update();
+            grid = gridBuilder.Build(palette2, 0);
+            var gridMesh = grid.componentManager.GetComponent<Mesh>();
+            grid.GetComponent<Transform>()?.Translate(-new Vector3(gridMesh.vertices[0], gridMesh.vertices[1], gridMesh.vertices[2]));
+            grid.GetComponent<Transform>()?.RotateX(180);
+            grid.GetComponent<Transform>()?.Scale(0.0025f);
+            grid.AddChild(outlineBuilder.BuildGridOutline(grid));
 
-            lastPalette1 = palette1;
-            lastPalette2 = palette2;
-            lastPalette3 = palette3;
-            lastPalette4 = palette4;
+            grid2 = gridBuilder.Build(palette2, 1);
+            grid2.GetComponent<Transform>()?.Translate(-new Vector3(4 * gridMesh.vertices[0], 4 * gridMesh.vertices[1], 4 * gridMesh.vertices[2]));
+            grid2.GetComponent<Transform>()?.RotateX(180);
+            grid2.GetComponent<Transform>()?.Scale(0.0025f);
+            grid2.AddChild(outlineBuilder.BuildGridOutline(grid2));
+
+            gridSlice = gridSliceBuilder.Build(grid, palette, 1, 1, 5);
+            gridSlice.GetComponent<Transform>()?.Translate(-new Vector3(4 * gridMesh.vertices[0], 4 * gridMesh.vertices[1], 4 * gridMesh.vertices[2]));
+            gridSlice.GetComponent<Transform>()?.RotateX(180);
+            gridSlice.GetComponent<Transform>()?.RotateY(180);
+            gridSlice.GetComponent<Transform>()?.Scale(0.0025f);
+            gridSlice.AddChild(outlineBuilder.BuildSliceOutline(gridSlice));
+
+
+            lastPaletteColor1 = paletteColor1;
+            lastPaletteColor2 = paletteColor2;
+            lastPaletteColor3 = paletteColor3;
+            lastPaletteColor4 = paletteColor4;
 
             IsMeshMode = false;
             GL.ClearColor(new Color4(0.5f, 0.5f, 0.5f, 1.0f));
@@ -126,16 +111,37 @@ namespace Graphics
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            //if (lastPalette1 != palette1 || lastPalette2 != palette2 || lastPalette3 != palette3 || lastPalette4 != palette4)
+            //if (lastPalette1 != paletteColor1 || lastPalette2 != paletteColor2 || lastPalette3 != paletteColor3 || lastPalette4 != paletteColor4)
             //{
                 
-            //    gridColors = ColorArrayCreator.CreateGridColorArray(grid, palette1, palette2, palette3, palette4);
+            //    gridColors = ColorArrayCreator.CreateGridColorArray(grid, paletteColor1, paletteColor2, paletteColor3, paletteColor4);
             //    grid.GetComponent<MeshRenderer>().Color = gridColors;
             //    grid.GetComponent<MeshRenderer>()?.Init();
             //}
 
             GL.LineWidth(2);
             GL.PolygonMode(MaterialFace.FrontAndBack, IsMeshMode ? PolygonMode.Line : PolygonMode.Fill);
+            
+            Matrix4 viewMatrix;
+            Matrix4 projectionMatrix;
+            if (_camera != null)
+            {
+                viewMatrix = _camera.GetViewMatrix();
+                projectionMatrix = _camera.GetProjectionMatrix();
+            }
+            else
+            {
+                viewMatrix = Matrix4.Identity;
+                projectionMatrix = Matrix4.Identity;
+            }
+
+
+            grid.GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            grid.children[0].GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            grid2.GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            grid2.children[0].GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            gridSlice.GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
+            gridSlice.children[0].GetComponent<MeshRenderer>().Render(viewMatrix, projectionMatrix);
 
 
             //if (isVisibleGrid)
@@ -145,7 +151,7 @@ namespace Graphics
             //    grid.GetComponent<Mesh>().vertices = mesh.vertices;
             //    grid.GetComponent<Mesh>().indices = mesh.indices;
             //    grid.GetComponent<MeshRenderer>().Init();
-            //    var newOutlineMesh = new OutlineMeshCreator().CreateGridOutline(grid);
+            //    var newOutlineMesh = new OutlineMeshCreator().CreateGridOutlineMesh(grid);
             //    gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
             //    gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
             //    gridOutline.GetComponent<MeshRenderer>().Init();
@@ -157,7 +163,7 @@ namespace Graphics
             //    grid.GetComponent<Mesh>().vertices = mesh.vertices;
             //    grid.GetComponent<Mesh>().indices = mesh.indices;
             //    grid.GetComponent<MeshRenderer>().Init();
-            //    var newOutlineMesh = new OutlineMeshCreator().CreateGridOutline(grid);
+            //    var newOutlineMesh = new OutlineMeshCreator().CreateGridOutlineMesh(grid);
             //    gridOutline.GetComponent<Mesh>().vertices = newOutlineMesh.vertices;
             //    gridOutline.GetComponent<Mesh>().indices = newOutlineMesh.indices;
             //    gridOutline.GetComponent<MeshRenderer>().Init();
@@ -175,10 +181,10 @@ namespace Graphics
             //    gridChild.GetComponent<MeshRenderer>()?.Render(viewMatrix, projectionMatrix);
             //}
 
-            lastPalette1 = palette1;
-            lastPalette2 = palette2;
-            lastPalette3 = palette3;
-            lastPalette4 = palette4;
+            lastPaletteColor1 = paletteColor1;
+            lastPaletteColor2 = paletteColor2;
+            lastPaletteColor3 = paletteColor3;
+            lastPaletteColor4 = paletteColor4;
         }
 
         private void OnImGuiDraw()
@@ -207,10 +213,10 @@ namespace Graphics
             };
             if (ImGui.CollapsingHeader("Surface colors"))
             {
-                ImGui.ColorEdit3("1 color", ref palette1, ImGuiColorEditFlags.Float);
-                ImGui.ColorEdit3("2 color", ref palette2, ImGuiColorEditFlags.Float);
-                ImGui.ColorEdit3("3 color", ref palette3, ImGuiColorEditFlags.Float);
-                ImGui.ColorEdit3("4 color", ref palette4, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("1 color", ref paletteColor1, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("2 color", ref paletteColor2, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("3 color", ref paletteColor3, ImGuiColorEditFlags.Float);
+                ImGui.ColorEdit3("4 color", ref paletteColor4, ImGuiColorEditFlags.Float);
 
             }
             if (ImGui.CollapsingHeader("Grid"))

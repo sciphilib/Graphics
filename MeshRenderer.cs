@@ -72,7 +72,7 @@ namespace Graphics
             Owner?.GetComponent<RenderProps>()._shader.SetMat4("view", view);
             Owner?.GetComponent<RenderProps>()._shader.SetMat4("projection", proj);
             GL.BindVertexArray(VAO);
-            GL.DrawElements(Owner.GetComponent<Mesh>().PrimitiveType, Owner.GetComponent<Mesh>().indices.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(Owner.GetComponent<RenderProps>()._primitiveType, Owner.GetComponent<Mesh>().indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
         }
     }

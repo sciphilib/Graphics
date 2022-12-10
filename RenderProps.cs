@@ -13,14 +13,14 @@ namespace Graphics
     {
         public string _vertexShaderPath;
         public string _fragmentShaderPath;
-        public double[] _color;
+        public double[]? _color;
         public Shader _shader;
         public PrimitiveType _primitiveType;
 
-        public RenderProps(string vertexShaderPath, string fragmentShaderPath, double[] color, PrimitiveType pType)
+        public RenderProps(string fragmentShaderPath, string vertexShaderPath, double[]? color, PrimitiveType pType)
         {
-            _vertexShaderPath = vertexShaderPath;
             _fragmentShaderPath = fragmentShaderPath;
+            _vertexShaderPath = vertexShaderPath;
             _shader = new(vertexShaderPath, fragmentShaderPath);
             _color = color;
             _primitiveType = pType;
