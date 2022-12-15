@@ -65,12 +65,12 @@ namespace Graphics
             GL.BindVertexArray(0);
         }
 
-        public void Render(Matrix4 view, Matrix4 proj)
+        public void Render(CameraContext cameraContext)
         {
             Owner?.GetComponent<RenderProps>()._shader.Use();
             Owner?.GetComponent<RenderProps>()._shader.SetMat4("model", Owner.GetComponent<Transform>().transform);
-            Owner?.GetComponent<RenderProps>()._shader.SetMat4("view", view);
-            Owner?.GetComponent<RenderProps>()._shader.SetMat4("projection", proj);
+            Owner?.GetComponent<RenderProps>()._shader.SetMat4("view", cameraContext.viewMatrix);
+            Owner?.GetComponent<RenderProps>()._shader.SetMat4("projection", cameraContext.projectionMatrix);
             GL.BindVertexArray(VAO);
             GL.DrawElements(Owner.GetComponent<RenderProps>()._primitiveType, Owner.GetComponent<Mesh>().indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);

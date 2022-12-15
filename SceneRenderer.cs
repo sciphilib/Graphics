@@ -8,22 +8,22 @@ namespace Graphics
 {
     public class SceneRenderer
     {
-        private Window window;
-        public SceneRenderer(Window window)
-        {
-            this.window = window;
-            window.BindRenderCallback(OnRender);
-        }
-        public void Render(Scene scene)
+        //private Window window;
+        //public SceneRenderer(Window window)
+        //{
+        //    this.window = window;
+        //    window.BindRenderCallback(OnRender);
+        //}
+        public static void Render(Scene scene, CameraContext cameraContext)
         {
             foreach(var obj in scene.objects)
             {
-                
+                obj.GetComponent<MeshRenderer>().Render(cameraContext);
             }
         }
-        public void OnRender()
-        {
+        //public void OnRender()
+        //{
 
-        }
+        //}
     }
 }
