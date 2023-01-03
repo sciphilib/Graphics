@@ -23,7 +23,7 @@ namespace Graphics
         {
             var grid = GridParser.Parse(_verticesPath);
             grid.AddComponent(GridPropertiesParser.Parse(grid, _propsPath));
-            GridPropertiesLoader.Load(propertySet, grid, grid.GetComponent<GridProperties>());
+            GridPropertiesLoader.Load(propertySet, grid, grid.GetComponent<Properties>());
             grid.AddComponent(new RenderProps(_fragShaderPath, _vertShaderPath, ColorArrayCreator.CreateGridColorArray(grid,palette), OpenTK.Graphics.OpenGL.PrimitiveType.Triangles));
             grid.AddComponent(new Transform());
             grid.AddComponent(GridMeshCreator.Create(grid));

@@ -11,7 +11,7 @@ namespace Graphics
 {
     public class GridPropertiesParser
     {
-        static public GridProperties Parse(Grid grid, string filePath)
+        static public Properties Parse(Grid grid, string filePath)
         {
             StreamReader reader = new(filePath, Encoding.UTF8);
             string? line;
