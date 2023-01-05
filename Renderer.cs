@@ -57,7 +57,7 @@ namespace Graphics
 
             _cameraContext.Update();
             SceneRenderer.Render(mainScene, _cameraContext);
-            SurfaceParser.Parse("data\\20x20x6.txt");
+
         }
 
         private void OnImGuiDraw()

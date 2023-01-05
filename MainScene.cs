@@ -37,6 +37,8 @@ namespace Graphics
                 "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
             var outlineBuilder = new OutlineBuilder("Shaders\\FragmentOutlineShader.glsl", "Shaders\\VertexOutlineShader.glsl");
             var gridSliceBuilder = new GridSliceBuilder("Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
+            var surfaceBuilder = new SurfaceBuilder("data\\20x20x6.txt", "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
+
 
             Grid grid = gridBuilder.Build(palette2, 0);
             var gridMesh = grid.componentManager.GetComponent<Mesh>();
@@ -58,9 +60,17 @@ namespace Graphics
             gridSlice.GetComponent<Transform>()?.Scale(0.0025f);
             gridSlice.AddChild(outlineBuilder.BuildSliceOutline(gridSlice));
 
+            Surface surface = surfaceBuilder.Build(palette, 0);
+            var surfaceMesh = surface.componentManager.GetComponent<Mesh>();
+            surface.GetComponent<Transform>()?.Translate(-new OpenTK.Mathematics.Vector3(5 * surfaceMesh.vertices[0], 20 * surfaceMesh.vertices[1], -10000 + surfaceMesh.vertices[2]));
+            surface.GetComponent<Transform>()?.RotateY(-35);
+            surface.GetComponent<Transform>()?.Scale(0.00009f);
+            surface.AddChild(outlineBuilder.BuildSurfaceOutline(surface));
+
             AddObject(grid);
             AddObject(grid2);
             AddObject(gridSlice);
+            AddObject(surface);
         }
     }
 }

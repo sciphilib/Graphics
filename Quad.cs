@@ -12,7 +12,7 @@ namespace Graphics
 
         public Vector3[] vertices;
         public bool isActive;
-        public double property;
+        public float property;
 
         public Quad()
         {

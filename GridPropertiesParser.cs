@@ -17,11 +17,11 @@ namespace Graphics
             string? line;
 
             int propertiesCount;
-            double[,] properties;
+            float[,] properties;
 
             line = reader.ReadLine();
             propertiesCount = Convert.ToInt32(line, CultureInfo.InvariantCulture);
-            properties = new double[propertiesCount, grid.Capacity];
+            properties = new float[propertiesCount, grid.Capacity];
 
             for (int i = 0; i < propertiesCount; i++)
             {
@@ -32,9 +32,7 @@ namespace Graphics
                     properties[i, j] = Convert.ToSingle(line, CultureInfo.InvariantCulture);
                 }
             }
-
             return new(propertiesCount, properties);
-
         }
     }
 }

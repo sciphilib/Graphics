@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class RenderContext
+    struct RenderContext
     {
         public Camera camera;
     }

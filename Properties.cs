@@ -11,12 +11,12 @@ using Graphics.ECS;
 
 namespace Graphics
 {
-    public class GridProperties : Component
+    public class Properties : Component
     {
         public int propertiesCount;
-        public double[,] properties;
+        public float[,] properties;
 
-        public GridProperties(int propertiesCount, double[,] properties)
+        public Properties(int propertiesCount, float[,] properties)
         {
             this.propertiesCount = propertiesCount;
             this.properties = properties;

@@ -8,7 +8,7 @@ namespace Graphics
 {
     public class GridPropertiesLoader
     {
-        static public void Load(int propertyNumber, Grid grid, GridProperties gridProperties)
+        static public void Load(int propertyNumber, Grid grid, Properties gridProperties)
         {
             int counter = 0;
             grid.MinProperty = grid.MaxProperty = gridProperties.properties[propertyNumber, 0];

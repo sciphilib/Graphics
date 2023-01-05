@@ -11,6 +11,28 @@ namespace Graphics
 {
     public class ColorArrayCreator
     {
+        static public double[] CreateSurfaceColorArray(Surface surface, params Vector3[] palette)
+        {
+            int verticesPerQuad = 4;
+            int colorValuePerVert = 3;
+            double[] array = new double[verticesPerQuad * colorValuePerVert * surface.Capacity];
+            int index = 0;
+
+            for (int i = 0; i < surface.SizeX; i++)
+            {
+                for (int j = 0; j < surface.SizeY; j++)
+                {
+                    for (int vertex = 0; vertex < verticesPerQuad; vertex++)
+                    {
+                        Map(surface.GetQuad(i, j).property, surface.MinProperty, surface.MaxProperty, out double[] mapValues, palette);
+                        array[index++] = mapValues[0];
+                        array[index++] = mapValues[1];
+                        array[index++] = mapValues[2];
+                    }
+                }
+            }
+            return array;
+        }
         static public double[] CreateGridColorArray(Grid grid, params Vector3[] palette)
         {
             int verticesPerCell = 8;
@@ -24,7 +46,7 @@ namespace Graphics
                 {
                     for (int j = 0; j < grid.SizeY; j++)
                     {
-                        for (int vertex = 0; vertex < 8; vertex++)
+                        for (int vertex = 0; vertex < verticesPerCell; vertex++)
                         {
                             Map(grid.GetCell(i, j, k).property, grid.MinProperty, grid.MaxProperty, out double[] mapValues, palette);
                             array[index++] = mapValues[0];

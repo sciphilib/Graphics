@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Graphics.ECS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class Surface
+    public class Surface : Entity
     {
-        public int SizeI { get; set; }
-        public int SizeJ { get; set; }
+        public int SizeX { get; set; }
+        public int SizeY { get; set; }
         public int Size { get; set; }
         public int Capacity { get; set; }
         public float MaxProperty { get; set; }
@@ -19,10 +20,10 @@ namespace Graphics
 
         public Surface(int sizeI, int sizeJ)
         {
-            SizeI = sizeI;
-            SizeJ = sizeJ;
-            Size = Capacity = SizeI * SizeJ;
-            quads = new Quad[SizeI, SizeJ];
+            SizeX = sizeI;
+            SizeY = sizeJ;
+            Size = Capacity = SizeX * SizeY;
+            quads = new Quad[SizeX, SizeY];
         }
 
         public ref Quad GetQuad(int i, int j)

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Graphics
 {
-    public class OutlineMeshCreator
+    public class GridSOutlineMeshCreator
     {
-
         public Mesh CreateGridOutlineMesh(Grid grid)
         {
             vertices = grid.GetComponent<Mesh>()?.vertices;

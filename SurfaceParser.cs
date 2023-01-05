@@ -11,7 +11,7 @@ namespace Graphics
 {
     public class SurfaceParser
     {
-        static public Surface Parse(string filePath)
+        static public Surface? Parse(string filePath)
         {
             string? line;
             string[]? splittedArray;
@@ -26,7 +26,7 @@ namespace Graphics
             if (line == null)
             {
                 Console.WriteLine("Empty file.");
-                return new Surface(0, 0);
+                return null;
             }
             splittedArray = line?.Split(' ');
 
@@ -62,13 +62,16 @@ namespace Graphics
                             isActive = isActive
                         };
                         isFirst = false;
+
                         if (!isActive)
+                        {
                             surface.Size--;
+                        }
+
                         continue;
                     }
                     else
                     {
-
                         if (isFirstHeightValue)
                         {
                             minHeight = maxHeight = Convert.ToSingle(elements[1], CultureInfo.InvariantCulture);
@@ -80,7 +83,6 @@ namespace Graphics
                             Convert.ToSingle(elements[1], CultureInfo.InvariantCulture),
                             Convert.ToSingle(elements[2], CultureInfo.InvariantCulture));
                         surface.GetQuad(i, j).vertices[vertexNumber++] = coords;
-                        surface.GetQuad(i, j).property = coords.Y;
                     }
                 }
             }
