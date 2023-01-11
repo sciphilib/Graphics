@@ -26,6 +26,8 @@ namespace Graphics
             GridPropertiesLoader.Load(propertySet, grid, grid.GetComponent<Properties>());
             grid.AddComponent(new RenderProps(_fragShaderPath, _vertShaderPath, ColorArrayCreator.CreateGridColorArray(grid,palette), OpenTK.Graphics.OpenGL.PrimitiveType.Triangles));
             grid.AddComponent(new Transform());
+            grid.GetComponent<Transform>()?.RotateX(180);
+            grid.GetComponent<Transform>()?.Scale(0.0025f);
             grid.AddComponent(GridMeshCreator.Create(grid));
             grid.AddComponent(new MeshRenderer());
             grid.GetComponent<MeshRenderer>().Init();

@@ -31,6 +31,9 @@ namespace Graphics
                     OpenTK.Graphics.OpenGL.PrimitiveType.Triangles)
                 );
             surface.AddComponent(new Transform());
+            surface.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(-60, 0, 40));
+            surface.GetComponent<Transform>()?.RotateY(-35);
+            surface.GetComponent<Transform>()?.Scale(0.00009f);
             surface.AddComponent(SurfaceMeshCreator.Create(surface));
             surface.AddComponent(new MeshRenderer());
             surface.GetComponent<MeshRenderer>().Init();

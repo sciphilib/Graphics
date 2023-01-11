@@ -18,6 +18,10 @@ namespace Graphics
             var slice = new GridSlice(grid, i, j, k);
             slice.AddComponent(new RenderProps(_fragShaderPath, _vertShaderPath, ColorArrayCreator.CreateGridSliceColorArray(grid, slice, palette), OpenTK.Graphics.OpenGL.PrimitiveType.Triangles));
             slice.AddComponent(new Transform());
+            //slice.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -10));
+            slice.GetComponent<Transform>()?.RotateX(180);
+            slice.GetComponent<Transform>()?.RotateY(180);
+            slice.GetComponent<Transform>()?.Scale(0.0025f);
             slice.AddComponent(new GridSliceMeshCreator(grid, slice).Create());
             slice.AddComponent(new MeshRenderer());
             slice.GetComponent<MeshRenderer>().Init();

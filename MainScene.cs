@@ -2,6 +2,7 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -42,29 +43,19 @@ namespace Graphics
 
             Grid grid = gridBuilder.Build(palette2, 0);
             var gridMesh = grid.componentManager.GetComponent<Mesh>();
-            grid.GetComponent<Transform>()?.Translate(-new OpenTK.Mathematics.Vector3(gridMesh.vertices[0], gridMesh.vertices[1], gridMesh.vertices[2]));
-            grid.GetComponent<Transform>()?.RotateX(180);
-            grid.GetComponent<Transform>()?.Scale(0.0025f);
+            grid.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, 0));
             grid.AddChild(outlineBuilder.BuildGridOutline(grid));
 
             Grid grid2 = gridBuilder.Build(palette2, 1);
-            grid2.GetComponent<Transform>()?.Translate(-new OpenTK.Mathematics.Vector3(4 * gridMesh.vertices[0], 4 * gridMesh.vertices[1], 4 * gridMesh.vertices[2]));
-            grid2.GetComponent<Transform>()?.RotateX(180);
-            grid2.GetComponent<Transform>()?.Scale(0.0025f);
+            grid2.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -4500));
             grid2.AddChild(outlineBuilder.BuildGridOutline(grid2));
 
-            GridSlice gridSlice = gridSliceBuilder.Build(grid, palette, 1, 1, 5);
-            gridSlice.GetComponent<Transform>()?.Translate(-new OpenTK.Mathematics.Vector3(4 * gridMesh.vertices[0], 4 * gridMesh.vertices[1], 4 * gridMesh.vertices[2]));
-            gridSlice.GetComponent<Transform>()?.RotateX(180);
-            gridSlice.GetComponent<Transform>()?.RotateY(180);
-            gridSlice.GetComponent<Transform>()?.Scale(0.0025f);
+            var gridSlice = gridSliceBuilder.Build(grid, palette, 1, 1, 5);
+            gridSlice.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -7000));
             gridSlice.AddChild(outlineBuilder.BuildSliceOutline(gridSlice));
 
             Surface surface = surfaceBuilder.Build(palette, 0);
             var surfaceMesh = surface.componentManager.GetComponent<Mesh>();
-            surface.GetComponent<Transform>()?.Translate(-new OpenTK.Mathematics.Vector3(5 * surfaceMesh.vertices[0], 20 * surfaceMesh.vertices[1], -10000 + surfaceMesh.vertices[2]));
-            surface.GetComponent<Transform>()?.RotateY(-35);
-            surface.GetComponent<Transform>()?.Scale(0.00009f);
             surface.AddChild(outlineBuilder.BuildSurfaceOutline(surface));
 
             AddObject(grid);
