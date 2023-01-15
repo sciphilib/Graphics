@@ -1,13 +1,4 @@
 ﻿using Graphics.ECS;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Graphics
 {

@@ -38,7 +38,7 @@ namespace Graphics
                 "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
             var outlineBuilder = new OutlineBuilder("Shaders\\FragmentOutlineShader.glsl", "Shaders\\VertexOutlineShader.glsl");
             var gridSliceBuilder = new GridSliceBuilder("Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
-            var surfaceBuilder = new SurfaceBuilder("data\\20x20x6.txt", "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
+            //var surfaceBuilder = new SurfaceBuilder("data\\20x20x6.txt", "Shaders\\FragmentSurfaceShader.glsl", "Shaders\\VertexSurfaceShader.glsl");
 
 
             Grid grid = gridBuilder.Build(palette2, 0);
@@ -46,22 +46,32 @@ namespace Graphics
             grid.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, 0));
             grid.AddChild(outlineBuilder.BuildGridOutline(grid));
 
-            Grid grid2 = gridBuilder.Build(palette2, 1);
-            grid2.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -4500));
-            grid2.AddChild(outlineBuilder.BuildGridOutline(grid2));
+            //Grid grid2 = gridBuilder.Build(palette2, 1);
+            //grid2.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -4500));
+            //grid2.AddChild(outlineBuilder.BuildGridOutline(grid2));
 
             var gridSlice = gridSliceBuilder.Build(grid, palette, 1, 1, 5);
             gridSlice.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(0, 0, -7000));
             gridSlice.AddChild(outlineBuilder.BuildSliceOutline(gridSlice));
 
-            Surface surface = surfaceBuilder.Build(palette, 0);
-            var surfaceMesh = surface.componentManager.GetComponent<Mesh>();
-            surface.AddChild(outlineBuilder.BuildSurfaceOutline(surface));
+            var gridSlice2 = gridSliceBuilder.Build(grid, palette, 1, 15, 2);
+            gridSlice2.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(500, 0, -3000));
+            gridSlice2.AddChild(outlineBuilder.BuildSliceOutline(gridSlice2));
 
-            AddObject(grid);
-            AddObject(grid2);
+            var gridSlice3 = gridSliceBuilder.Build(grid, palette, 0, 8, 3);
+            gridSlice3.GetComponent<Transform>()?.Translate(new OpenTK.Mathematics.Vector3(-5000, 0, -6000));
+            gridSlice3.AddChild(outlineBuilder.BuildSliceOutline(gridSlice3));
+
+            //Surface surface = surfaceBuilder.Build(palette, 0);
+            //var surfaceMesh = surface.componentManager.GetComponent<Mesh>();
+            //surface.AddChild(outlineBuilder.BuildSurfaceOutline(surface));
+
+            //AddObject(grid);
+            //AddObject(grid2);
             AddObject(gridSlice);
-            AddObject(surface);
+            AddObject(gridSlice2);
+            AddObject(gridSlice3);
+            //AddObject(surface);
         }
     }
 }

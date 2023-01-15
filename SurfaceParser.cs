@@ -1,11 +1,6 @@
-﻿using OpenTK.Graphics.ES20;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Graphics
 {
@@ -19,7 +14,6 @@ namespace Graphics
             string row;
 
             bool isFirst;
-            bool isFirstHeightValue = true;
 
             StreamReader reader = new(filePath, Encoding.UTF8);
             line = reader.ReadLine();
@@ -46,11 +40,8 @@ namespace Graphics
 
                 foreach (var obj in splittedArray)
                 {
-
                     row = obj[0] == ' ' ? obj.Remove(0, 1) : obj;
                     elements = row.Split(' ');
-
-                    float minHeight, maxHeight;
 
                     if (isFirst)
                     {
@@ -61,23 +52,17 @@ namespace Graphics
                         {
                             isActive = isActive
                         };
-                        isFirst = false;
 
                         if (!isActive)
                         {
                             surface.Size--;
                         }
 
+                        isFirst = false;
                         continue;
                     }
                     else
                     {
-                        if (isFirstHeightValue)
-                        {
-                            minHeight = maxHeight = Convert.ToSingle(elements[1], CultureInfo.InvariantCulture);
-                            isFirstHeightValue = false;
-                        }
-
                         var coords = new Vector3(
                             Convert.ToSingle(elements[0], CultureInfo.InvariantCulture),
                             Convert.ToSingle(elements[1], CultureInfo.InvariantCulture),
