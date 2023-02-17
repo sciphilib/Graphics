@@ -4,7 +4,7 @@ namespace Graphics.ECS
 {
     public class Component
     {
-        public Entity? Owner{ get; private set; }
+        public Entity? Owner{ get; protected set; }
 
         public Component()
         {

@@ -22,7 +22,7 @@ namespace Graphics.ImGUI
     {
         private bool _frameBegun;
 
-        // Veldrid objects
+        // Veldrid Objects
         private int _vertexArray;
         private int _vertexBuffer;
         private int _vertexBufferSize;
